@@ -22,4 +22,7 @@ assert_contains "$(curl -s "$BASE/foro/register.php")" "Acceso solo por invitaci
 # Review Focus #2: index sin sesión redirige a login
 assert_contains "$(curl -s -L "$BASE/foro/index.php")" "Iniciar sesión" "foro exige login"
 
+# Review Focus #2: post.php sin sesión también redirige a login (RFI inalcanzable sin credenciales)
+assert_contains "$(curl -s -L "$BASE/foro/post.php?id=1")" "Iniciar sesión" "post.php exige login"
+
 echo "03_forum_auth OK"
