@@ -17,17 +17,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: post.php?id=' . $id);
     exit;
 }
-?><!DOCTYPE html>
-<html lang="es">
-<head><meta charset="utf-8"><title>Nueva publicación - Foro CTF</title></head>
-<body>
-<h1>Nueva publicación</h1>
-<form method="post" action="new_post.php">
-  <p><input type="text" name="title" placeholder="Título"></p>
-  <p><textarea name="body" placeholder="Contenido"></textarea></p>
-  <p><input type="text" name="embed_url" placeholder="URL de recurso a incrustar (opcional)"></p>
-  <button type="submit">Publicar</button>
-</form>
-<p><a href="index.php">Volver</a></p>
-</body>
-</html>
+
+require_once __DIR__ . '/../lib/layout.php';
+sx_header('Nueva publicación — Foro Shellyx', 'foro', $u);
+?>
+<section class="section">
+  <div class="container narrow" style="max-width:720px">
+    <div class="forum-head" style="margin-bottom:18px">
+      <div>
+        <span class="eyebrow">Foro</span>
+        <h1 style="margin:0">Nueva publicación</h1>
+      </div>
+      <a class="btn btn--muted btn--sm" href="index.php">&larr; Volver</a>
+    </div>
+
+    <div class="panel panel--pad">
+      <form method="post" action="new_post.php">
+        <div class="field">
+          <label for="title">Título</label>
+          <input type="text" id="title" name="title" placeholder="Título de la publicación">
+        </div>
+        <div class="field">
+          <label for="body">Contenido</label>
+          <textarea id="body" name="body" placeholder="Comparte tu módulo, script o duda con la comunidad..."></textarea>
+        </div>
+        <div class="field">
+          <label for="embed_url">URL de recurso a incrustar <span class="muted">(opcional)</span></label>
+          <input type="text" id="embed_url" name="embed_url" placeholder="https://ejemplo.com/recurso.php">
+          <small class="muted mono" style="font-size:.76rem">Se mostrará una vista previa del recurso dentro de la publicación.</small>
+        </div>
+        <button class="btn btn--primary" type="submit"><?= sx_icon('bolt', 18) ?> Publicar</button>
+      </form>
+    </div>
+  </div>
+</section>
+<?php sx_footer(); ?>

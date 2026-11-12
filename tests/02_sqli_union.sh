@@ -3,8 +3,8 @@ set -u
 cd "$(dirname "$0")/.." || exit 1
 source tests/lib.sh
 
-# (a) búsqueda normal encuentra el producto demo
-assert_contains "$(curl -s "$BASE/tienda/search.php?q=Camiseta")" "Camiseta Demo" "search término normal"
+# (a) búsqueda normal encuentra un producto del catálogo
+assert_contains "$(curl -s "$BASE/tienda/search.php?q=Shellyx")" "Shellyx One" "search término normal"
 
 # (b) Review Focus #3: término sin resultados -> 200, sin 500
 code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/tienda/search.php?q=zzz_no_existe")
