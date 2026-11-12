@@ -64,7 +64,6 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
 <link rel="stylesheet" href="/assets/css/shellyx.css">
 </head>
 <body>
-<div class="labnote"><div class="container"><?= sx_icon('shield', 15) ?> Entorno de laboratorio Shellyx · uso local y controlado · no exponer a redes no confiables</div></div>
 <nav class="nav">
   <div class="nav__inner">
     <a class="brand" href="/" aria-label="Shellyx inicio">
