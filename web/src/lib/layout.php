@@ -69,6 +69,8 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
 <link rel="stylesheet" href="/assets/css/shellyx.css">
 </head>
 <body>
+<div id="cursorglow" aria-hidden="true"></div>
+<script>(function(){if(window.matchMedia&&matchMedia('(pointer:coarse)').matches)return;var r=document.documentElement,raf=0;addEventListener('pointermove',function(e){if(raf)return;raf=requestAnimationFrame(function(){r.style.setProperty('--cx',e.clientX+'px');r.style.setProperty('--cy',e.clientY+'px');raf=0;});},{passive:true});})();</script>
 <nav class="nav">
   <div class="nav__inner">
     <a class="brand" href="/" aria-label="Shellyx inicio">
