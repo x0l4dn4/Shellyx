@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../lib/cart.php';
+require_once __DIR__ . '/../lib/shop_auth.php';
+shop_require_login();
 sx_cart_start();
 
 $coins = sx_coins();
@@ -38,7 +40,7 @@ if (!isset($coins[$coinKey])) $coinKey = 'xmr';
 $coin = $coins[$coinKey];
 
 require_once __DIR__ . '/../lib/layout.php';
-sx_header('Checkout — Shellyx', 'tienda', null, 'Pago anónimo en cripto en la tienda Shellyx.');
+sx_header('Checkout — Shellyx', 'tienda', null, 'Pago en cripto en la tienda Shellyx.');
 ?>
 <section class="section">
   <div class="container" style="max-width:860px">
@@ -56,7 +58,7 @@ sx_header('Checkout — Shellyx', 'tienda', null, 'Pago anónimo en cripto en la
           <div class="sum-row"><span>Total</span><span><?= sx_eur($order['total']) ?></span></div>
           <div class="sum-row sum-row--total"><span>Pagado en</span><span class="accent"><?= e($order['amount']) ?> <?= e($order['coin']) ?></span></div>
         </div>
-        <p class="muted mono" style="font-size:.76rem;margin:16px 0 0">Transacción simulada · no se ha movido dinero real · no guardamos datos personales</p>
+        <p class="muted mono" style="font-size:.76rem;margin:16px 0 0">Transacción simulada · no se ha movido dinero real · sin correo ni datos bancarios</p>
         <div class="hero__cta" style="justify-content:center;margin-top:22px">
           <a class="btn btn--primary" href="/tienda/"><?= sx_icon('cart', 18) ?> Seguir comprando</a>
           <a class="btn btn--ghost" href="/">Volver al inicio</a>
@@ -77,8 +79,8 @@ sx_header('Checkout — Shellyx', 'tienda', null, 'Pago anónimo en cripto en la
       <div class="shop-head" style="margin-bottom:22px">
         <div>
           <span class="eyebrow">Checkout</span>
-          <h1 style="margin:0">Pago anónimo en cripto</h1>
-          <p class="muted" style="margin:.4em 0 0">Sin correo, sin datos bancarios. Solo paga y listo.</p>
+          <h1 style="margin:0">Pago en cripto</h1>
+          <p class="muted" style="margin:.4em 0 0">Sin correo ni datos bancarios. Paga en cripto y listo.</p>
         </div>
         <a class="btn btn--muted btn--sm" href="carrito.php">&larr; Volver al carrito</a>
       </div>
