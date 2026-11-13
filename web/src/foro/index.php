@@ -80,12 +80,12 @@ forum_breadcrumb([['Inicio', null]]);
         <?= avatar_html($t['author'], 't-ava') ?>
         <div class="t-main">
           <a class="t-title" href="post.php?id=<?= (int)$t['id'] ?>"><?= render_title_with_tag($t['title']) ?></a>
-          <div class="t-sub">iniciado por <a href="post.php?id=<?= (int)$t['id'] ?>"><?= e($t['author']) ?></a> · <?= e(hace($t['created_at'])) ?></div>
+          <div class="t-sub">iniciado por <?= user_link($t['author']) ?> · <?= e(hace($t['created_at'])) ?></div>
         </div>
         <div class="t-count"><b><?= (int)$t['reply_count'] ?></b><span><?= $t['reply_count'] == 1 ? 'respuesta' : 'respuestas' ?></span></div>
         <div class="t-last">
           <?= avatar_html($t['last_user']) ?>
-          <div class="t-last-txt"><a href="post.php?id=<?= (int)$t['id'] ?>"><?= e($t['last_user']) ?></a><span><?= e(hace($t['last_time'])) ?></span></div>
+          <div class="t-last-txt"><?= user_link($t['last_user']) ?><span><?= e(hace($t['last_time'])) ?></span></div>
         </div>
       </li>
       <?php endforeach; ?>

@@ -101,6 +101,26 @@ function category_icon(string $key): string
     return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
 }
 
+// Extracto de texto plano en una línea (sin escapar: pásalo por e()).
+function excerpt(string $text, int $len = 180): string
+{
+    $t = trim(preg_replace('/\s+/u', ' ', $text));
+    return mb_strlen($t, 'UTF-8') > $len ? rtrim(mb_substr($t, 0, $len, 'UTF-8')) . '…' : $t;
+}
+
+// URL del perfil público de un usuario (ya escapada para atributo href).
+function profile_url(string $username): string
+{
+    return 'perfil.php?u=' . e(rawurlencode($username));
+}
+
+// Enlace con el nombre de usuario hacia su perfil.
+function user_link(string $username, string $class = ''): string
+{
+    $cls = $class !== '' ? ' class="' . e($class) . '"' : '';
+    return '<a' . $cls . ' href="' . profile_url($username) . '">' . e($username) . '</a>';
+}
+
 // Tarjeta de usuario del post bit (cadena pura, sin include dentro).
 function usercard_html(string $author, int $msgCount): string
 {
@@ -108,7 +128,7 @@ function usercard_html(string $author, int $msgCount): string
     $since = member_since($author);
     $h  = '<aside class="usercard">';
     $h .= avatar_html($author, 'uc-ava');
-    $h .= '<a class="uc-name" href="index.php">' . e($author) . '</a>';
+    $h .= '<a class="uc-name" href="' . profile_url($author) . '">' . e($author) . '</a>';
     $h .= '<span class="role ' . $roleClass . '">' . e($roleLabel) . '</span>';
     $h .= '<dl class="uc-stats"><div><dt>Mensajes</dt><dd>' . number_format($msgCount, 0, ',', '.') . '</dd></div>';
     $h .= '<div><dt>Desde</dt><dd>' . $since . '</dd></div></dl>';
@@ -125,23 +145,43 @@ function forum_head(string $title): void
     echo '<meta charset="utf-8">' . "\n";
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n";
     echo '<title>' . e($title) . '</title>' . "\n";
+    echo '<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">' . "\n";
+    echo '<meta name="theme-color" content="#14171b">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">' . "\n";
     echo '<link rel="stylesheet" href="/foro/assets/forum.css">' . "\n";
     echo "</head>\n<body>\n";
+    // Luz tenue verde que sigue al puntero (capa de fondo, detrás del contenido).
+    echo '<div id="cursorglow" aria-hidden="true"></div>' . "\n";
+    echo "<script>(function(){if(window.matchMedia&&matchMedia('(pointer:coarse)').matches)return;"
+       . "var r=document.documentElement,raf=0;addEventListener('pointermove',function(e){"
+       . "if(raf)return;raf=requestAnimationFrame(function(){"
+       . "r.style.setProperty('--cx',e.clientX+'px');r.style.setProperty('--cy',e.clientY+'px');raf=0;});"
+       . "},{passive:true});})();</script>\n";
 }
 
-function forum_bar(?array $user): void
+// $active: foros|novedades|miembros|'' ; $q: término actual del buscador.
+function forum_bar(?array $user, string $active = 'foros', string $q = ''): void
 {
+    $nav = [
+        'foros'     => ['index.php',     'Foros'],
+        'novedades' => ['novedades.php', 'Novedades'],
+        'miembros'  => ['miembros.php',  'Miembros'],
+    ];
     echo '<header class="fbar"><div class="wrap">';
     echo '<a class="brand" href="../../index.php">' . BRAND_CHIP . 'Shellyx</a>';
-    echo '<nav class="mainnav"><a href="index.php" class="on">Foros</a><a href="index.php">Novedades</a><a href="index.php">Miembros</a></nav>';
-    echo '<div class="search">' . SEARCH_ICON . '<input type="text" placeholder="Buscar en el foro…" aria-label="Buscar"></div>';
+    echo '<nav class="mainnav">';
+    foreach ($nav as $k => [$href, $label]) {
+        echo '<a href="' . $href . '"' . ($active === $k ? ' class="on"' : '') . '>' . e($label) . '</a>';
+    }
+    echo '</nav>';
+    echo '<form class="search" method="get" action="buscar.php" role="search">' . SEARCH_ICON
+        . '<input type="search" name="q" value="' . e($q) . '" placeholder="Buscar en el foro…" aria-label="Buscar en el foro"></form>';
     echo '<div class="session">';
     if ($user) {
         echo '<a class="btn btn-accent" href="new_post.php">Nueva publicación</a>';
-        echo '<span class="me">' . avatar_html($user['username'], 'me-ava') . '<span class="me-name">' . e($user['username']) . '</span></span>';
+        echo '<a class="me" href="perfil.php" title="Mi perfil">' . avatar_html($user['username'], 'me-ava') . '<span class="me-name">' . e($user['username']) . '</span></a>';
         echo '<a class="btn btn-ghost" href="logout.php">Salir</a>';
     } else {
         echo '<a class="btn btn-ghost" href="register.php">Registrarse</a>';

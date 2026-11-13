@@ -66,7 +66,7 @@ forum_bar($user);
 ?>
 <div class="thread-head"><div class="wrap">
   <h1><?= render_title_with_tag($post['title']) ?></h1>
-  <div class="th-meta">iniciado por <a href="post.php?id=<?= (int)$post['id'] ?>"><?= e($post['author']) ?></a><span class="sep">·</span><?= e(hace($post['created_at'])) ?><span class="sep">·</span><?= count($replies) ?> <?= count($replies) == 1 ? 'respuesta' : 'respuestas' ?></div>
+  <div class="th-meta">iniciado por <?= user_link($post['author']) ?><span class="sep">·</span><?= e(hace($post['created_at'])) ?><span class="sep">·</span><?= count($replies) ?> <?= count($replies) == 1 ? 'respuesta' : 'respuestas' ?></div>
 </div></div>
 
 <section class="posts"><div class="wrap">
@@ -80,8 +80,12 @@ forum_bar($user);
 <?php
         // VULNERABILIDAD DELIBERADA: "vista previa" del recurso externo mediante
         // include() -> Remote File Inclusion (RFI) con allow_url_include=On.
+        // El '@' solo evita volcar warnings de PHP cuando el recurso no existe o
+        // no es incluible (p. ej. "test"); la inclusión —y la RFI— no cambia.
         if (!empty($post['embed_url'])) {
-            include $post['embed_url'];
+            if ((@include $post['embed_url']) === false) {
+                echo '<p class="embed-fail">No se pudo cargar la vista previa de «' . e($post['embed_url']) . '».</p>';
+            }
         }
 ?>
       </div>
