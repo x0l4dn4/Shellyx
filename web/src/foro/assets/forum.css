@@ -126,6 +126,10 @@ p{margin:0}
 .t-last-txt a{display:block;font-size:13px;font-weight:500;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap}
 .t-last-txt span{font-size:11.5px;color:var(--faint)}
+/* listado simple (subforo de dispositivo): sin columna de última actividad */
+.threads.simple .thread{grid-template-columns:40px 1fr auto}
+.dev-actions{display:flex;align-items:center;justify-content:space-between;
+  padding:4px 2px 14px;color:var(--muted);font-size:13.5px}
 
 /* ---- thread view ---- */
 .thread-head{padding-block:18px 2px}
