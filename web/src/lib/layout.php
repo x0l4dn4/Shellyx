@@ -79,7 +79,7 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
       <?php foreach ($nav as $k => $it): ?>
         <a href="<?= $it[0] ?>"<?= $active === $k ? ' class="is-active"' : '' ?>><?= e($it[1]) ?></a>
       <?php endforeach; ?>
-      <a href="https://github.com" target="_blank" rel="noopener"><?= sx_icon('github', 16) ?></a>
+      <a href="https://github.com/x0l4dn4/Shellyx" target="_blank" rel="noopener"><?= sx_icon('github', 16) ?></a>
       <a class="nav__cart" href="/tienda/carrito.php" aria-label="Carrito" title="Carrito">
         <?= sx_icon('cart', 18) ?><?php if ($cartCount > 0): ?><span class="badge"><?= $cartCount ?></span><?php endif; ?>
       </a>
