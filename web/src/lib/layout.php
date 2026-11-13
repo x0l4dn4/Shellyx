@@ -127,8 +127,16 @@ function sx_footer(): void
       <div>
         <h4>Empresa</h4>
         <a href="/#empresa">Sobre Shellyx</a>
-        <a href="/#privacidad">Privacidad</a>
-        <a href="/#empresa">Uso ético</a>
+        <a href="/#comunidad">Retos mensuales</a>
+        <a href="/legal/terminos.php">Uso ético</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="/legal/aviso-legal.php">Aviso legal</a>
+        <a href="/legal/privacidad.php">Privacidad</a>
+        <a href="/legal/cookies.php">Cookies</a>
+        <a href="/legal/terminos.php">Términos y condiciones</a>
+        <a href="/legal/faq.php">Preguntas frecuentes</a>
       </div>
     </div>
     <div class="footer__bottom">

@@ -109,7 +109,7 @@ sx_header('Shellyx — Hardware Hacking Tools', 'inicio');
         <p class="muted">Solo almacenamos lo imprescindible para proteger la plataforma: usuario, hash de la contraseña, y registros de acceso con IP y marca de tiempo.</p>
         <p class="muted" style="margin:0">Nunca guardamos datos bancarios ni monederos, correos, teléfonos, nombres ni direcciones. No se requieren.</p>
         <div class="hero__cta">
-          <a class="btn btn--ghost" href="#empresa"><?= sx_icon('lock', 18) ?> Cómo tratamos los datos</a>
+          <a class="btn btn--ghost" href="/legal/privacidad.php"><?= sx_icon('lock', 18) ?> Cómo tratamos los datos</a>
         </div>
       </div>
       <div class="grid" style="grid-template-columns:1fr 1fr">
