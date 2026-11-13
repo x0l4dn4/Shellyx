@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.." || exit 1
 source tests/lib.sh
 
 # El código servido (web/src) y el seed no deben delatar las vulnerabilidades ni
-# que esto es un laboratorio/CTF. (El mockup desechable se excluye.)
+# que esto es un laboratorio/CTF.
 PAT='vulnerabilid|deliberad|inyect|\bRFI\b|\bSQLi\b|\bCTF\b|del reto|laborator|rockyou|allow_url_include|salto tienda|cracke|el vector|UNION-vulnerable'
 # Se excluye el fichero de atribución de las fotos (contiene nombres de fichero de
 # Wikimedia Commons, no comentarios del código).

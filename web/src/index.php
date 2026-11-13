@@ -57,7 +57,7 @@ sx_header('Shellyx — Hardware Hacking Tools', 'inicio');
       <div class="card">
         <div class="card__icon"><?= sx_icon('community') ?></div>
         <h3>Comunidad abierta</h3>
-        <p>Un ecosistema que crece con la gente: foro de soporte, repositorio en GitHub y retos nuevos cada mes.</p>
+        <p>Un ecosistema que crece con la gente: foro de soporte, documentación abierta y retos nuevos cada mes.</p>
       </div>
     </div>
   </div>

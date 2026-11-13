@@ -13,6 +13,7 @@ assert_contains "$land" 'href="/#etica"'    "el footer enlaza a Uso ético"
 
 # GitHub retirado de nav y footer; Docs presente y servible.
 assert_not_contains "$land" "github.com"     "la tienda ya no enlaza a GitHub"
+assert_not_contains "$land" "GitHub"          "la landing no menciona GitHub en el texto"
 assert_contains     "$land" 'href="/docs/"'  "nav/footer enlazan a Docs"
 docs=$(curl -s "$BASE/docs/")
 assert_contains     "$docs" "Documentación"  "la página Docs responde con contenido"
