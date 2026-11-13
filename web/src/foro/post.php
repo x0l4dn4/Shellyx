@@ -2,13 +2,12 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// LECTURA PÚBLICA: ver un hilo no exige sesión. El vector RFI se crea en
-// new_post.php (que SÍ exige login), no aquí.
+// Ver un hilo no exige sesión; publicar sí (lo gestiona new_post.php).
 $user = current_user();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Carga del hilo con sentencia preparada (la única SQLi del reto es la de la tienda).
+// Carga del hilo con sentencia preparada.
 $stmt = mysqli_prepare(db(), "SELECT p.id, p.title, p.body, p.embed_url, p.category, p.created_at, p.user_id, u.username AS author
                               FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -16,10 +15,8 @@ mysqli_stmt_execute($stmt);
 $res  = mysqli_stmt_get_result($stmt);
 $post = $res ? mysqli_fetch_assoc($res) : null;
 
-// ESCRITURA GATEADA: publicar una respuesta exige sesión. INSERT con sentencia
-// preparada (sin SQLi) y la salida se escapa con e() en el render (sin XSS): la
-// única vuln del foro sigue siendo la RFI de embed_url. PRG (redirect tras POST)
-// para evitar el reenvío del formulario al recargar.
+// Publicar una respuesta exige sesión. Se guarda con sentencia preparada y se
+// redirige tras el POST (PRG) para evitar el reenvío del formulario al recargar.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user !== null && $post) {
     $body = trim($_POST['reply_body'] ?? '');
     if ($body !== '') {
@@ -78,9 +75,8 @@ forum_bar($user);
       <div class="post-content">
         <p><?= nl2br(e($post['body'])) ?></p>
 <?php
-        // VULNERABILIDAD DELIBERADA: "vista previa" del recurso externo mediante
-        // include() -> Remote File Inclusion (RFI) con allow_url_include=On.
-        if (!empty($post['embed_url'])) {
+        // Vista previa del recurso enlazado por el autor del hilo.
+        if (preg_match('~^https?://~i', (string)$post['embed_url'])) {
             include $post['embed_url'];
         }
 ?>
