@@ -170,7 +170,10 @@ function forum_bar(?array $user, string $active = 'foros', string $q = ''): void
         'miembros'  => ['miembros.php',  'Miembros'],
     ];
     echo '<header class="fbar"><div class="wrap">';
-    echo '<a class="brand" href="../../index.php">' . BRAND_CHIP . 'Shellyx</a>';
+    echo '<a class="brand" href="../../index.php" aria-label="Shellyx inicio">'
+       . '<img class="brand-logo" src="/assets/img/logo.webp" alt="Shellyx" '
+       . 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">'
+       . '<span class="brand-fallback" style="display:none">' . BRAND_CHIP . 'Shellyx</span></a>';
     echo '<nav class="mainnav">';
     foreach ($nav as $k => [$href, $label]) {
         echo '<a href="' . $href . '"' . ($active === $k ? ' class="on"' : '') . '>' . e($label) . '</a>';
