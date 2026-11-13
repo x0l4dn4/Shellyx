@@ -252,8 +252,13 @@ function forum_bar(?array $user, string $active = 'foros', string $q = ''): void
        	. '<img class="brand-logo" src="/assets/img/logo.webp" alt="Shellyx" '
        	. 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">'
        	. '<span class="brand-fallback" style="display:none">' . BRAND_CHIP . 'Shellyx</span></a>';
-    echo '<nav class="mainnav"><a href="index.php" class="on">Foros</a><a href="index.php">Novedades</a><a href="index.php">Miembros</a></nav>';
-    echo '<div class="search">' . SEARCH_ICON . '<input type="text" placeholder="Buscar en el foro…" aria-label="Buscar"></div>';
+    echo '<nav class="mainnav">';
+    foreach ($nav as $k => [$href, $label]) {
+        echo '<a href="' . $href . '"' . ($active === $k ? ' class="on"' : '') . '>' . e($label) . '</a>';
+    }
+    echo '</nav>';
+    echo '<form class="search" method="get" action="buscar.php" role="search">' . SEARCH_ICON
+       . '<input type="search" name="q" value="' . e($q) . '" placeholder="Buscar en el foro…" aria-label="Buscar en el foro"></form>';
     echo '<div class="session">';
     if ($user) {
         echo '<a class="btn btn-accent" href="new_post.php">Nueva publicación</a>';
