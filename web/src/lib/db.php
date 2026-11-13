@@ -1,7 +1,5 @@
 <?php
 // Conexión mysqli compartida por la tienda y el foro.
-// Un único usuario de BD con acceso a todo el esquema (habilita el salto
-// tienda -> foro vía UNION en la SQLi).
 
 function db(): mysqli
 {
@@ -22,8 +20,7 @@ function db(): mysqli
         $c = @mysqli_connect($host, $user, $pass, $name);
         if ($c instanceof mysqli) {
             $conn = $c;
-            // UTF-8 extremo a extremo (acentos del foro). No afecta a la SQLi de
-            // la tienda: esa concatena sin escapar, así que sigue siendo inyectable.
+            // UTF-8 extremo a extremo (acentos del foro).
             mysqli_set_charset($conn, 'utf8mb4');
             return $conn;
         }

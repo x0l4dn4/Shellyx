@@ -34,16 +34,11 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
-
-body {
-  margin: 0;
+/* Fondo en el root para que la luz del puntero (#cursorglow, z-index:-1) quede
+   sobre el fondo pero por DEBAJO de todo el contenido y los botones. */
+html {
+  scroll-behavior: smooth;
   background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
   /* rejilla sutil + resplandor verde superior */
   background-image:
     radial-gradient(900px 500px at 80% -10%, rgba(50,251,112,0.10), transparent 60%),
@@ -51,8 +46,26 @@ body {
     linear-gradient(transparent 0 97%, var(--panel-line) 97% 100%),
     linear-gradient(90deg, transparent 0 97%, var(--panel-line) 97% 100%);
   background-size: auto, auto, 44px 44px, 44px 44px;
+}
+
+body {
+  margin: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
+
+/* Luz tenue verde que sigue al puntero: capa fija de fondo, sin capturar clics. */
+#cursorglow {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(170px circle at var(--cx, -999px) var(--cy, -999px),
+    rgba(50,251,112,0.26), rgba(50,251,112,0.10) 40%, transparent 66%);
+}
+@media (pointer: coarse) { #cursorglow { display: none; } }
 
 a { color: var(--green); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }

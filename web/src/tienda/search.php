@@ -2,11 +2,13 @@
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/layout.php';
 
-// VULNERABILIDAD DELIBERADA: la consulta se construye concatenando la
-// entrada del usuario -> SQL injection (UNION) en el parámetro ?q=.
+// Búsqueda del catálogo por nombre.
 $q = $_GET['q'] ?? '';
-$sql = "SELECT id, name, price, description FROM products WHERE name LIKE '%$q%'";
-$res = mysqli_query(db(), $sql);
+$like = '%' . $q . '%';
+$stmt = mysqli_prepare(db(), "SELECT id, name, price, description FROM products WHERE name LIKE ?");
+mysqli_stmt_bind_param($stmt, "s", $like);
+mysqli_stmt_execute($stmt);
+$res = mysqli_stmt_get_result($stmt);
 
 sx_header('Buscar — Tienda Shellyx', 'tienda', null, 'Buscador del catálogo de Shellyx.');
 ?>

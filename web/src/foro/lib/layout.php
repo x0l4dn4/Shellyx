@@ -1,8 +1,6 @@
 <?php
-// Presentación compartida del foro (estilo XenForo/XDA). Solo marcado y helpers
-// de vista; la autenticación vive en lib/auth.php. Toda salida de datos de BD
-// pasa por e() — el foro NO es vulnerable a XSS; la única vuln del foro es la RFI
-// de post.php vía include($embed_url).
+// Presentación compartida del foro (estilo XenForo/XDA): marcado y helpers de
+// vista. La autenticación vive en lib/auth.php.
 
 // Categorías (nodos). La clave es el valor de posts.category.
 const FORUM_CATEGORIES = [
@@ -15,6 +13,37 @@ const FORUM_CATEGORIES = [
 function e(?string $s): string
 {
     return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8');
+}
+
+// Agrupación de los dispositivos de la tienda en el índice del foro (subforos).
+// La clave es el título del grupo; el valor, los product_id que contiene.
+const DEVICE_GROUPS = [
+    'Dispositivos Shellyx' => [1, 2, 3, 8],
+    'Módulos y accesorios' => [4, 5, 6, 7, 9],
+];
+
+// Glifo SVG para la "miniatura" de cada dispositivo (varía por product_id).
+function device_icon_svg(int $id): string
+{
+    $paths = [
+        1 => '<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 7V4M14 7V4M10 20v-3M14 20v-3M7 10H4M7 14H4M20 10h-3M20 14h-3"/>',
+        2 => '<circle cx="12" cy="19" r="2"/><path d="M12 17V5"/><path d="M9 12H6v3M15 10h3v5"/>',
+        3 => '<rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/><rect x="10.5" y="10.5" width="3" height="3"/>',
+        4 => '<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/>',
+        5 => '<path d="M12 12v9"/><circle cx="12" cy="9" r="2"/><path d="M7.8 13.2a6 6 0 0 1 0-8.4M16.2 4.8a6 6 0 0 1 0 8.4"/>',
+        6 => '<path d="M12 21V9M8 9l4-6 4 6"/><path d="M6 21h12"/>',
+        7 => '<rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9.5 6.5h5"/>',
+        8 => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M3 9h4M3 15h4M11 8h7M11 12h7"/>',
+        9 => '<path d="M4 7h16M4 12h16M4 17h10"/>',
+    ];
+    $p = $paths[$id] ?? $paths[1];
+    return '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
+}
+
+// URL del subforo de un dispositivo.
+function device_url(int $id): string
+{
+    return 'dispositivo.php?id=' . $id;
 }
 
 function avatar_initials(string $username): string
@@ -51,6 +80,48 @@ function member_since(string $username): int
     return 2021 + (crc32('since:' . $username) % 4); // 2021..2024, estable por usuario
 }
 
+// Estadísticas públicas de un usuario (posts, respuestas, mensajes). Cacheadas
+// en una sola consulta por petición.
+function user_stats(string $username): array
+{
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        $q = mysqli_query(db(), "SELECT u.username,
+                (SELECT COUNT(*) FROM posts p   WHERE p.user_id = u.id) AS posts,
+                (SELECT COUNT(*) FROM replies r WHERE r.user_id = u.id) AS replies
+                FROM users u");
+        while ($q && $row = mysqli_fetch_assoc($q)) {
+            $p = (int)$row['posts']; $r = (int)$row['replies'];
+            $cache[$row['username']] = ['posts' => $p, 'replies' => $r, 'msgs' => $p + $r];
+        }
+    }
+    return $cache[$username] ?? ['posts' => 0, 'replies' => 0, 'msgs' => 0];
+}
+
+// Reputación pública derivada de la actividad.
+function user_reputation(string $username): int
+{
+    $s = user_stats($username);
+    $rep = $s['posts'] * 10 + $s['replies'] * 3;
+    if ($username === 'admin')         $rep += 400;
+    elseif ($username === 'moderador') $rep += 250;
+    return $rep;
+}
+
+// Rango dentro del foro: [etiqueta, clase] según rol y reputación.
+function user_rank(string $username, ?int $rep = null): array
+{
+    if ($username === 'admin')     return ['Administrador', 'rk-admin'];
+    if ($username === 'moderador') return ['Moderador', 'rk-mod'];
+    $rep = $rep ?? user_reputation($username);
+    if ($rep >= 250) return ['Leyenda',  'rk-legend'];
+    if ($rep >= 120) return ['Experto',  'rk-expert'];
+    if ($rep >= 60)  return ['Veterano', 'rk-veteran'];
+    if ($rep >= 20)  return ['Miembro',  'rk-member'];
+    return ['Novato', 'rk-rookie'];
+}
+
 // Fecha relativa en español. Envejece con naturalidad a lo largo de la vida del lab.
 function hace(string $datetime): string
 {
@@ -72,7 +143,7 @@ function strip_tag_prefix(string $title): string
     return trim(preg_replace('/^\s*\[[^\]]{1,16}\]\s*/u', '', $title));
 }
 
-// Renderiza el título con un chip de color si empieza por [TAG]. Escapa el resto.
+// Renderiza el título con un chip de color si empieza por [TAG].
 function render_title_with_tag(string $title): string
 {
     if (preg_match('/^\s*\[([^\]]{1,16})\]\s*(.*)$/u', $title, $m)) {
@@ -101,18 +172,44 @@ function category_icon(string $key): string
     return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
 }
 
-// Tarjeta de usuario del post bit (cadena pura, sin include dentro).
-function usercard_html(string $author, int $msgCount): string
+// Extracto de texto plano en una línea.
+function excerpt(string $text, int $len = 180): string
 {
-    [$roleLabel, $roleClass] = member_role($author);
+    $t = trim(preg_replace('/\s+/u', ' ', $text));
+    return mb_strlen($t, 'UTF-8') > $len ? rtrim(mb_substr($t, 0, $len, 'UTF-8')) . '…' : $t;
+}
+
+// URL del perfil público de un usuario.
+function profile_url(string $username): string
+{
+    return 'perfil.php?u=' . e(rawurlencode($username));
+}
+
+// Enlace con el nombre de usuario hacia su perfil. El color/brillo del nombre
+// depende del rango (rk-*), por reputación.
+function user_link(string $username, string $class = ''): string
+{
+    [, $rankClass] = user_rank($username);
+    $cls = trim('uname ' . $rankClass . ' ' . $class);
+    return '<a class="' . e($cls) . '" href="' . profile_url($username) . '">' . e($username) . '</a>';
+}
+
+// Tarjeta de usuario del post bit (cadena pura, sin include dentro).
+function usercard_html(string $author): string
+{
+    $rep = user_reputation($author);
+    [$rankLabel, $rankClass] = user_rank($author, $rep);
+    $s = user_stats($author);
     $since = member_since($author);
     $h  = '<aside class="usercard">';
     $h .= avatar_html($author, 'uc-ava');
-    $h .= '<a class="uc-name" href="index.php">' . e($author) . '</a>';
-    $h .= '<span class="role ' . $roleClass . '">' . e($roleLabel) . '</span>';
-    $h .= '<dl class="uc-stats"><div><dt>Mensajes</dt><dd>' . number_format($msgCount, 0, ',', '.') . '</dd></div>';
-    $h .= '<div><dt>Desde</dt><dd>' . $since . '</dd></div></dl>';
-    $h .= '</aside>';
+    $h .= '<a class="uc-name ' . $rankClass . '" href="' . profile_url($author) . '">' . e($author) . '</a>';
+    $h .= '<span class="rank ' . $rankClass . '">' . e($rankLabel) . '</span>';
+    $h .= '<dl class="uc-stats">';
+    $h .= '<div><dt>Mensajes</dt><dd>' . number_format($s['msgs'], 0, ',', '.') . '</dd></div>';
+    $h .= '<div><dt>Reputación</dt><dd>' . number_format($rep, 0, ',', '.') . '</dd></div>';
+    $h .= '<div><dt>Desde</dt><dd>' . $since . '</dd></div>';
+    $h .= '</dl></aside>';
     return $h;
 }
 
@@ -125,16 +222,32 @@ function forum_head(string $title): void
     echo '<meta charset="utf-8">' . "\n";
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n";
     echo '<title>' . e($title) . '</title>' . "\n";
+    echo '<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">' . "\n";
+    echo '<meta name="theme-color" content="#14171b">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">' . "\n";
     echo '<link rel="stylesheet" href="/foro/assets/forum.css">' . "\n";
     echo "</head>\n<body>\n";
+    // Luz tenue verde que sigue al puntero (capa de fondo, detrás del contenido).
+    echo '<div id="cursorglow" aria-hidden="true"></div>' . "\n";
+    echo "<script>(function(){if(window.matchMedia&&matchMedia('(pointer:coarse)').matches)return;"
+       . "var r=document.documentElement,raf=0;addEventListener('pointermove',function(e){"
+       . "if(raf)return;raf=requestAnimationFrame(function(){"
+       . "r.style.setProperty('--cx',e.clientX+'px');r.style.setProperty('--cy',e.clientY+'px');raf=0;});"
+       . "},{passive:true});})();</script>\n";
 }
 
-function forum_bar(?array $user): void
+// $active: foros|novedades|miembros|'' ; $q: término actual del buscador.
+function forum_bar(?array $user, string $active = 'foros', string $q = ''): void
 {
+    $nav = [
+        'foros'     => ['index.php',     'Foros'],
+        'novedades' => ['novedades.php', 'Novedades'],
+        'miembros'  => ['miembros.php',  'Miembros'],
+    ];
     echo '<header class="fbar"><div class="wrap">';
+
 	echo '<a class="brand" href="../../index.php" aria-label="Shellyx inicio">'
        	. '<img class="brand-logo" src="/assets/img/logo.webp" alt="Shellyx" '
        	. 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">'
@@ -144,7 +257,7 @@ function forum_bar(?array $user): void
     echo '<div class="session">';
     if ($user) {
         echo '<a class="btn btn-accent" href="new_post.php">Nueva publicación</a>';
-        echo '<span class="me">' . avatar_html($user['username'], 'me-ava') . '<span class="me-name">' . e($user['username']) . '</span></span>';
+        echo '<a class="me" href="perfil.php" title="Mi perfil">' . avatar_html($user['username'], 'me-ava') . '<span class="me-name">' . e($user['username']) . '</span></a>';
         echo '<a class="btn btn-ghost" href="logout.php">Salir</a>';
     } else {
         echo '<a class="btn btn-ghost" href="register.php">Registrarse</a>';

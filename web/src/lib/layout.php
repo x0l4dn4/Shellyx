@@ -2,9 +2,8 @@
 /**
  * Shellyx — capa de presentación compartida (tienda + foro + landing).
  *
- * Solo maquetación/estética. No altera ninguna lógica de la aplicación ni las
- * vulnerabilidades didácticas del laboratorio (SQLi en el buscador, RFI en el
- * post). Rutas absolutas desde el DocumentRoot, así sirve igual en /tienda,
+ * Solo maquetación/estética. No altera ninguna lógica de la aplicación.
+ * Rutas absolutas desde el DocumentRoot, así sirve igual en /tienda,
  * /foro y la raíz.
  */
 
@@ -52,7 +51,7 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
         'tienda' => ['/tienda/', 'Tienda'],
         'foro'   => ['/foro/',   'Foro'],
     ];
-    // Contador del carrito (si hay sesión activa con carrito). Seguro si no la hay.
+    // Contador del carrito.
     $cartCount = 0;
     if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['sx_cart'])) {
         $cartCount = (int)array_sum($_SESSION['sx_cart']);
@@ -69,6 +68,8 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
 <link rel="stylesheet" href="/assets/css/shellyx.css">
 </head>
 <body>
+<div id="cursorglow" aria-hidden="true"></div>
+<script>(function(){if(window.matchMedia&&matchMedia('(pointer:coarse)').matches)return;var r=document.documentElement,raf=0;addEventListener('pointermove',function(e){if(raf)return;raf=requestAnimationFrame(function(){r.style.setProperty('--cx',e.clientX+'px');r.style.setProperty('--cy',e.clientY+'px');raf=0;});},{passive:true});})();</script>
 <nav class="nav">
   <div class="nav__inner">
     <a class="brand" href="/" aria-label="Shellyx inicio">
