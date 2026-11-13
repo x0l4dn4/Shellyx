@@ -52,6 +52,11 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
         'tienda' => ['/tienda/', 'Tienda'],
         'foro'   => ['/foro/',   'Foro'],
     ];
+    // Contador del carrito (si hay sesión activa con carrito). Seguro si no la hay.
+    $cartCount = 0;
+    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['sx_cart'])) {
+        $cartCount = (int)array_sum($_SESSION['sx_cart']);
+    }
     ?><!DOCTYPE html>
 <html lang="es">
 <head>
@@ -75,6 +80,9 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
         <a href="<?= $it[0] ?>"<?= $active === $k ? ' class="is-active"' : '' ?>><?= e($it[1]) ?></a>
       <?php endforeach; ?>
       <a href="https://github.com" target="_blank" rel="noopener"><?= sx_icon('github', 16) ?></a>
+      <a class="nav__cart" href="/tienda/carrito.php" aria-label="Carrito" title="Carrito">
+        <?= sx_icon('cart', 18) ?><?php if ($cartCount > 0): ?><span class="badge"><?= $cartCount ?></span><?php endif; ?>
+      </a>
       <?php if ($user): ?>
         <span class="nav__user">// <b><?= e($user['username']) ?></b></span>
         <a href="/foro/logout.php">Salir</a>

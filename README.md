@@ -70,8 +70,12 @@ hashcat -m 0 hashes.txt /usr/share/wordlists/rockyou.txt
 
 ### 3. Login en el foro
 
-El foro no permite registro (botón "Registrarse" → *"Acceso solo por invitación"*).
-Entra en <http://localhost:8080/foro/login.php> con cualquier usuario crackeado.
+El foro es de **lectura pública** (los hilos y las respuestas se ven sin cuenta),
+pero **publicar exige sesión**: tanto abrir un hilo como responder requiere login, y
+el registro es solo por invitación (botón "Registrarse" → *"Acceso solo por invitación"*).
+Entra en <http://localhost:8080/foro/login.php> con cualquier usuario crackeado. Por eso
+el RFI del paso siguiente necesita una cuenta crackeada: el campo `embed_url` solo se
+crea desde "Nueva publicación", que está detrás del login.
 
 ### 4–5. RFI: incluir una webshell remota
 
@@ -128,11 +132,16 @@ Dos formas de resolverlo:
 
 ## Personalización
 
-- **Productos:** el catálogo trae solo un producto demo (`Camiseta Demo`). Edita
-  `db/init/01-schema-seed.sql` para añadir los tuyos (y elimina el demo). Aplica el
-  cambio con un reinicio limpio (`down -v && up --build`).
+- **Productos:** el catálogo Shellyx (gadgets de hardware hacking) está en
+  `db/init/01-schema-seed.sql`. Edítalo a gusto; el buscador sigue siendo
+  UNION-vulnerable. Aplica el cambio con un reinicio limpio (`down -v && up --build`).
 - **Usuarios del foro:** también en `db/init/01-schema-seed.sql`; las contraseñas se
   guardan con `MD5('...')`.
+- **Hilos y respuestas del foro:** sembrados en `db/init/01-schema-seed.sql` (tablas
+  `posts` y `replies`, con columna `category`). Edítalos o añade los tuyos y aplica con
+  un reinicio limpio. La apariencia estilo XenForo/XDA vive en
+  `web/src/foro/assets/forum.css` + `web/src/foro/lib/layout.php`. El foro es de lectura
+  pública; abrir hilos y responder exige login.
 
 ## Tests
 
@@ -142,5 +151,6 @@ Con el stack levantado (y el tráfico contenedor→host permitido para el paso R
 bash tests/run_all.sh      # -> CADENA COMPLETA OK
 ```
 
-Verifican: stack arriba, catálogo, SQLi UNION revela hashes, login/registro/gating,
-y RFI ejecutando PHP remoto.
+Verifican: stack arriba, catálogo, SQLi UNION revela hashes, login/registro y lectura
+pública del foro, respuestas de miembros (publicar gateado, sin XSS), y RFI ejecutando
+PHP remoto.

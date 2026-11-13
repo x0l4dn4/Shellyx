@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/lib/auth.php';
+require_once __DIR__ . '/lib/layout.php';
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -12,37 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = 'Usuario o contraseña incorrectos';
 }
 
-require_once __DIR__ . '/../lib/layout.php';
-sx_header('Iniciar sesión — Foro Shellyx', 'foro', null, 'Acceso al foro de la comunidad Shellyx.');
+forum_head('Iniciar sesión — Shellyx');
+forum_bar(current_user());
 ?>
-<section class="section">
-  <div class="container narrow">
-    <div class="panel panel--pad">
-      <div class="center" style="margin-bottom:22px">
-        <div class="card__icon" style="margin:0 auto 14px"><?= sx_icon('lock') ?></div>
-        <span class="eyebrow" style="margin:0">Acceso al foro</span>
-        <h1 style="font-size:1.8rem;margin:.3em 0 0">Iniciar sesión</h1>
-      </div>
-
-      <?php if ($error !== ''): ?>
-        <div class="alert alert--err"><?= e($error) ?></div>
-      <?php endif; ?>
-
-      <form method="post" action="login.php">
-        <div class="field">
-          <label for="username">Usuario</label>
-          <input type="text" id="username" name="username" placeholder="usuario" autocomplete="username" autofocus>
-        </div>
-        <div class="field">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
-        </div>
-        <button class="btn btn--primary btn--block" type="submit"><?= sx_icon('terminal', 18) ?> Entrar</button>
-      </form>
-
-      <p class="center muted" style="margin:18px 0 0;font-size:.9rem">¿No tienes cuenta? <a href="register.php">Registrarse</a></p>
-    </div>
-    <p class="center muted mono" style="margin-top:16px;font-size:.78rem">Privacidad garantizada · solo usuario y hash, sin correo</p>
-  </div>
-</section>
-<?php sx_footer(); ?>
+<section class="auth"><div class="wrap">
+  <form class="auth-card" method="post" action="login.php">
+    <h1>Iniciar sesión</h1>
+    <p class="sub">Accede para publicar hilos en Shellyx.</p>
+    <?php if ($error !== ''): ?><div class="auth-error"><?= e($error) ?></div><?php endif; ?>
+    <div class="field"><label for="u">Usuario</label><input id="u" name="username" type="text" placeholder="tu_usuario"></div>
+    <div class="field"><label for="p">Contraseña</label><input id="p" name="password" type="password" placeholder="••••••••"></div>
+    <button class="btn btn-accent btn-block" type="submit">Entrar</button>
+    <p class="auth-foot">¿No tienes cuenta?<br>
+      <a href="register.php"><span class="invite"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/></svg>El acceso es solo por invitación</span></a>
+    </p>
+  </form>
+</div></section>
+<?php forum_footer(); ?>

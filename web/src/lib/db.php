@@ -22,6 +22,9 @@ function db(): mysqli
         $c = @mysqli_connect($host, $user, $pass, $name);
         if ($c instanceof mysqli) {
             $conn = $c;
+            // UTF-8 extremo a extremo (acentos del foro). No afecta a la SQLi de
+            // la tienda: esa concatena sin escapar, así que sigue siendo inyectable.
+            mysqli_set_charset($conn, 'utf8mb4');
             return $conn;
         }
         usleep(500000); // 0.5 s
@@ -29,5 +32,8 @@ function db(): mysqli
 
     // Último intento (si falla, el error aflora de forma visible).
     $conn = mysqli_connect($host, $user, $pass, $name);
+    if ($conn instanceof mysqli) {
+        mysqli_set_charset($conn, 'utf8mb4');
+    }
     return $conn;
 }

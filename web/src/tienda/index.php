@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../lib/db.php';
+require_once __DIR__ . '/../lib/cart.php';
 require_once __DIR__ . '/../lib/layout.php';
+sx_cart_start();
 $res = mysqli_query(db(), "SELECT id, name, price, description FROM products");
 
 // Iconos rotatorios para dar variedad visual al catálogo (solo estética).
@@ -36,7 +38,11 @@ sx_header('Tienda — Shellyx', 'tienda', null, 'Catálogo de gadgets de hardwar
               <p class="product__desc"><?= e($row['description']) ?></p>
               <div class="product__foot">
                 <span class="product__price"><?= e($row['price']) ?><small> €</small></span>
-                <a class="btn btn--ghost btn--sm" href="search.php?q=<?= urlencode((string)$row['name']) ?>">Ver</a>
+                <form method="post" action="carrito.php" class="add-form">
+                  <input type="hidden" name="action" value="add">
+                  <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                  <button class="btn btn--primary btn--sm" type="submit"><?= sx_icon('cart', 16) ?> Añadir</button>
+                </form>
               </div>
             </div>
           </article>

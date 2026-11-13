@@ -1,5 +1,8 @@
 -- Esquema compartido tienda + foro, y datos sembrados.
 -- Se ejecuta automáticamente al inicializar MariaDB con el data dir vacío.
+-- (Para re-sembrar: docker compose down -v && docker compose up -d --build)
+
+SET NAMES utf8mb4;
 
 CREATE TABLE products (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,14 +17,25 @@ CREATE TABLE users (
   password_md5 CHAR(32)
 );
 
+-- Foro: hilos (posts) y respuestas (replies). La RFI vive en posts.embed_url,
+-- que se incluye en post.php. Las respuestas no tienen embed_url.
 CREATE TABLE posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   title VARCHAR(255),
   body TEXT,
   embed_url VARCHAR(512),
+  category VARCHAR(32) NOT NULL DEFAULT 'general',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE replies (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  post_id INT,
+  user_id INT,
+  body TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4;
 
 -- Catálogo Shellyx: gadgets de hardware hacking (gama de entrada < 100 EUR y
 -- gama avanzada). Editable a gusto; el buscador sigue siendo UNION-vulnerable.
@@ -44,8 +58,81 @@ INSERT INTO users (username, password_md5) VALUES
   ('mlopez',    MD5('qwerty')),
   ('agarcia',   MD5('sunshine'));
 
--- Post de bienvenida (opcional) para que el foro no arranque vacio.
-INSERT INTO posts (user_id, title, body, embed_url) VALUES
-  (1, 'Bienvenido al foro de Shellyx',
-   'Aqui compartimos modulos, firmwares y retos. Usa "Nueva publicacion" para abrir un hilo y puedes incrustar la vista previa de un recurso externo por URL.',
-   NULL);
+-- Ids de usuario (la cadena no depende del AUTO_INCREMENT exacto).
+SET @admin := (SELECT id FROM users WHERE username = 'admin');
+SET @mod   := (SELECT id FROM users WHERE username = 'moderador');
+SET @js    := (SELECT id FROM users WHERE username = 'jsanchez');
+SET @ml    := (SELECT id FROM users WHERE username = 'mlopez');
+SET @ag    := (SELECT id FROM users WHERE username = 'agarcia');
+
+-- Hilos sembrados (foro "vivo"): gadgets de hardware hacking inventados.
+-- embed_url vacío: ningún RFI accidental en páginas públicas; el vector lo mete
+-- un atacante autenticado vía new_post.php.
+INSERT INTO posts (id, user_id, title, body, embed_url, category, created_at) VALUES
+(1, @admin,
+ '[FIRMWARE] Shellyx Nibbler v2.3 — soporte 915 MHz y lector NFC mejorado',
+ 'Ya está disponible la v2.3 del firmware del Nibbler. Esta release toca sobre todo el stack sub-GHz y el lector NFC.\n\nChangelog:\n- Sub-GHz: soporte de 915 MHz además de 433/868. Replay más estable en ASK/OOK.\n- NFC: lectura de Mifare Classic 1K más fiable; menos fallos con tags gastados.\n- Arreglado un cuelgue al guardar más de 64 capturas en la SD.\n- Consumo en reposo reducido alrededor del 12 por ciento.\n\nPara flashear: poned el Nibbler en modo DFU (mantened BOOT mientras conectáis el USB-C) y cargad nibbler-2.3.bin con el flasher. No desconectéis a mitad.\n\nLas firmas SHA-256 están en el primer comentario fijado.',
+ '', 'firmware', NOW() - INTERVAL 3 DAY),
+(2, @admin,
+ 'GlitchWitch: perfiles de glitch para saltar el secure boot de un STM32F103',
+ 'He subido mis perfiles de glitch para el STM32F103. Con el clock a 8 MHz y un pulso corto entra casi siempre.\n\nAdjunto los offsets que mejor me funcionan. Si tenéis una placa con RDP nivel 1, probad primero en una de sacrificio: a veces el glitch deja el chip en un estado raro.\n\n¿Alguien lo ha probado contra la familia GD32 clónica?',
+ '', 'firmware', NOW() - INTERVAL 6 DAY),
+(3, @js,
+ '[BETA] Firmware abierto para el ProxReaver (emulación Mifare Classic 1K)',
+ 'Abro beta del firmware abierto para el ProxReaver. Objetivo: emulación de Mifare Classic 1K estable y lectura de bloques sin depender de la app oficial.\n\nQué va: lectura y clonado de 1K. Qué falta: HID Prox de 125 kHz y escritura de UID bloqueado.\n\nReportad fallos en este hilo con el log por serial, por favor.',
+ '', 'firmware', NOW() - INTERVAL 9 DAY),
+(4, @ag,
+ '[MÓDULO] QuackPad Mini: payload de exfil WiFi en Windows 11',
+ 'Payload para el QuackPad Mini que saca el perfil WiFi (SSID y clave en claro) en Windows 11 y lo manda por HTTP a tu host.\n\nEstá pensado para demos controladas. No lo uséis fuera de un laboratorio.\n\nSi Defender os corta el netsh, meted un pequeño retardo al inicio.',
+ '', 'payloads', NOW() - INTERVAL 4 DAY),
+(5, @ml,
+ 'Colección de payloads DuckyScript para el GhostTap X1',
+ 'Dejo una colección de payloads DuckyScript que uso con el GhostTap X1: abrir una reverse, volcar el portapapeles y un troll inofensivo para presentaciones.\n\nEl X1 tarda un poco en que el host lo reconozca como teclado, así que empezad siempre con un DELAY generoso.',
+ '', 'payloads', NOW() - INTERVAL 8 DAY),
+(6, @ag,
+ '[BRICK] Actualicé el JTAGoblin y ahora no enumera por USB',
+ 'Actualicé el firmware del JTAGoblin y ahora no enumera por USB. No lo ve ni Windows ni Linux, y el LED se queda fijo en rojo.\n\n¿Se puede recuperar por el header SWD o lo he convertido en un pisapapeles? Acepto cualquier idea antes de tirarlo.',
+ '', 'soporte', NOW() - INTERVAL 2 DAY),
+(7, @ml,
+ 'El PineSprite no levanta el AP rogue tras el último flasheo',
+ 'Desde el último flasheo, el PineSprite no levanta el AP rogue. El panel carga, pero el SSID falso no aparece por ningún lado.\n\n¿A alguien más le pasa con el firmware nuevo? En 2.4 GHz tampoco va.',
+ '', 'soporte', NOW() - INTERVAL 5 DAY),
+(8, @mod,
+ '[GUÍA] Flashear sin brickear: checklist antes de tocar el firmware',
+ 'Checklist rápida antes de tocar el firmware de cualquier cacharro, para no acabar en el subforo de bricks:\n\n- Batería por encima del 50 por ciento.\n- Cable de datos bueno (muchos USB-C solo llevan corriente).\n- Verificad el hash del binario antes de flashear.\n- Modo DFU o recovery, nunca en caliente.\n\nSi tras esto se os queda tieso, abrid hilo con el log completo.',
+ '', 'soporte', NOW() - INTERVAL 11 DAY),
+(9, @ml,
+ 'Unboxing del SubGhost — primeras impresiones vs el modelo viejo',
+ 'Me ha llegado el SubGhost nuevo y lo comparo con el modelo viejo que tenía.\n\nLo bueno: mejor front-end de RF, se nota el alcance a 433 MHz y el menú va más fluido. Lo malo: la carcasa sigue siendo endeble y la antena va justa.\n\n¿Merece el salto? Para replay sub-GHz, para mí sí.',
+ '', 'general', NOW() - INTERVAL 7 DAY),
+(10, @js,
+ 'Me presento: llevo 2 años con el Pwnapet colgado en la mochila',
+ 'Me presento: llevo dos años con el Pwnapet colgado en la mochila capturando handshakes por la ciudad. Al final te picas por subir de nivel al bicho.\n\nVengo a aprender de firmware y a cacharrear. Un saludo a todos.',
+ '', 'general', NOW() - INTERVAL 12 DAY),
+(11, @mod,
+ 'Normas del foro y cómo pedir ayuda con un brick',
+ 'Bienvenidos a Shellyx. Normas rápidas:\n\n1. Nada de datos ni credenciales reales de terceros en los payloads.\n2. Todo lo que se comparte aquí es para laboratorio y uso controlado.\n3. Antes de abrir un hilo de brick, mirad la guía fijada y pegad el log completo.\n\nGracias por mantener la comunidad sana.',
+ '', 'general', NOW() - INTERVAL 15 DAY);
+
+-- Respuestas sembradas (1-5 por usuario), para que los hilos se vean con conversación.
+INSERT INTO replies (post_id, user_id, body, created_at) VALUES
+(1, @ml,    'Flasheada sin problemas en mi unidad rev.B. El replay a 915 MHz va fino. Gracias por el currazo.', NOW() - INTERVAL 58 HOUR),
+(1, @js,    'A mí me petó a mitad de flasheo y se quedó en bucle de arranque. ¿Hay que entrar sí o sí en modo DFU antes?', NOW() - INTERVAL 54 HOUR),
+(1, @mod,   '@jsanchez sí, siempre DFU y con batería por encima del 50 por ciento. En caliente es justo como se brickean. Lo añado al post fijado.', NOW() - INTERVAL 30 HOUR),
+(1, @ag,    'Confirmo que en reposo el consumo bajó un pelín con la 2.3. El lector NFC también va más fino con tags Mifare gastados.', NOW() - INTERVAL 14 HOUR),
+(2, @js,    '¿Qué ancho de pulso usas para el glitch? A mí en el F103 con 80 ns no entra nunca.', NOW() - INTERVAL 120 HOUR),
+(2, @ml,    'Prueba a bajar el clock a 8 MHz y mover el offset en pasos de 2 ns. Así me saltó el RDP a mí.', NOW() - INTERVAL 100 HOUR),
+(3, @ml,    'Probada la beta. Clona mi llavero Mifare 1K sin despeinarse. ¿Caerá soporte de HID Prox más adelante?', NOW() - INTERVAL 168 HOUR),
+(3, @ag,    'El sector 0 con UID bloqueado no me lo deja escribir. ¿A vosotros sí?', NOW() - INTERVAL 150 HOUR),
+(4, @mod,   'Recordad no subir payloads con credenciales reales de nadie. Lo dejo enlazado en las normas.', NOW() - INTERVAL 70 HOUR),
+(4, @admin, 'Buen payload. En Win11 con Defender a tope salta el AMSI; mete un pequeño retardo al principio.', NOW() - INTERVAL 5 HOUR),
+(5, @ag,    'Me guardo la colección. El GhostTap X1 tarda en montar el HID, un DELAY 800 al inicio ayuda.', NOW() - INTERVAL 48 HOUR),
+(6, @mod,   '¿Actualizaste por USB o por el header SWD? Si se cortó a mitad por USB, casi seguro es el bootloader.', NOW() - INTERVAL 30 HOUR),
+(6, @admin, 'Pon el JTAGoblin en modo recovery con el puente JP1 y reflashea el loader. A mí me revivió uno igual.', NOW() - INTERVAL 26 HOUR),
+(6, @ml,    'A mí fue el cable. Con uno de datos bueno volvió a enumerar. Prueba otro USB-C antes de nada.', NOW() - INTERVAL 1 HOUR),
+(7, @mod,   'Revisa que el jumper de antena esté en EXT. Con la interna el rogue AP se cae cada dos por tres.', NOW() - INTERVAL 96 HOUR),
+(7, @js,    '¿Lo levantaste en 2.4 o en 5 GHz? El PineSprite en 5 GHz solo tira con el firmware nuevo.', NOW() - INTERVAL 8 HOUR),
+(8, @ag,    'Guía de cabecera. Añadiría: nunca flashear con la batería pelada, que es el error número uno.', NOW() - INTERVAL 240 HOUR),
+(9, @js,    '¿Merece la pena el salto solo por el sub-GHz? Lo tengo en el carrito.', NOW() - INTERVAL 72 HOUR),
+(9, @admin, 'Buen unboxing. El front-end nuevo se nota en el alcance a 433. Para mí vale el cambio.', NOW() - INTERVAL 26 HOUR),
+(10, @ml,   '¡Bienvenido! El Pwnapet engancha, en nada tienes la mochila llena de handshakes. ¿Ya le pusiste pantalla e-ink?', NOW() - INTERVAL 72 HOUR);
