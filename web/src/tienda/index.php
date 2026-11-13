@@ -8,6 +8,8 @@ $res = mysqli_query(db(), "SELECT id, name, price, description FROM products");
 // Iconos rotatorios para dar variedad visual al catálogo (solo estética).
 $icons = ['chip', 'antenna', 'wifi', 'usb', 'board', 'cpu', 'firmware', 'terminal'];
 $i = 0;
+// Foto por producto (fallback al icono si falta el fichero).
+$PROD_SLUG = [1 => 'shellyx-one', 2 => 'shellyx-mini', 3 => 'shellyx-pro', 4 => 'modulo-wifi-recon', 5 => 'modulo-subghz', 6 => 'antena-alta-ganancia', 7 => 'carcasa-translucida', 8 => 'kit-educativo', 9 => 'pack-firmwares'];
 
 sx_header('Tienda — Shellyx', 'tienda', null, 'Catálogo de gadgets de hardware hacking de Shellyx: dispositivos programables, accesorios y módulos.');
 ?>
@@ -32,6 +34,9 @@ sx_header('Tienda — Shellyx', 'tienda', null, 'Catálogo de gadgets de hardwar
             <div class="product__media">
               <span class="product__sku">SKU-<?= str_pad((string)$row['id'], 4, '0', STR_PAD_LEFT) ?></span>
               <?= sx_icon($ic, 58) ?>
+              <?php $slug = $PROD_SLUG[(int)$row['id']] ?? ''; if ($slug !== ''): ?>
+                <img class="product__img" src="/assets/img/productos/<?= $slug ?>.jpg" alt="<?= e($row['name']) ?>" loading="lazy" onerror="this.remove()">
+              <?php endif; ?>
             </div>
             <div class="product__body">
               <h3 class="product__name"><?= e($row['name']) ?></h3>

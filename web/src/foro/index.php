@@ -36,6 +36,7 @@ $groups = [
   'Packs'                => ['color' => 'var(--ok)',      'ids' => [8, 9]],
 ];
 $cat_dot = ['firmware' => 'var(--accent)', 'payloads' => '#a98bff', 'soporte' => 'var(--warn)', 'general' => 'var(--muted)'];
+$PROD_SLUG = [1 => 'shellyx-one', 2 => 'shellyx-mini', 3 => 'shellyx-pro', 4 => 'modulo-wifi-recon', 5 => 'modulo-subghz', 6 => 'antena-alta-ganancia', 7 => 'carcasa-translucida', 8 => 'kit-educativo', 9 => 'pack-firmwares'];
 
 // Miniatura del dispositivo (placeholder; la foto real vive en la tienda).
 function dev_thumb(int $id): string {
@@ -107,7 +108,7 @@ forum_bar($user);
             <?php foreach ($g['ids'] as $pid): if (!isset($products[$pid])) continue; $p = $products[$pid];
                 $t = $dev_threads[$pid] ?? 0; $m = $t + ($dev_msgs[$pid] ?? 0); ?>
             <article class="fh-card fh-dev" style="--g:<?= $g['color'] ?>">
-              <a class="fh-thumb" href="dispositivo.php?id=<?= (int)$pid ?>"><?= dev_thumb($pid) ?></a>
+              <a class="fh-thumb" href="dispositivo.php?id=<?= (int)$pid ?>"><?= dev_thumb($pid) ?><?php $slug = $PROD_SLUG[$pid] ?? ''; if ($slug !== ''): ?><img src="/assets/img/productos/<?= $slug ?>.jpg" alt="<?= e($p['name']) ?>" loading="lazy" onerror="this.remove()"><?php endif; ?></a>
               <div class="fh-b">
                 <h3><a href="dispositivo.php?id=<?= (int)$pid ?>"><?= e($p['name']) ?></a><span class="fh-price"><?= (int)$p['price'] ?> €</span></h3>
                 <div class="fh-counts"><span><b><?= $t ?></b> hilos</span><span><b><?= $m ?></b> mensajes</span></div>
