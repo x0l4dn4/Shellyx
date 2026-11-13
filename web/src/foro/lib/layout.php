@@ -135,7 +135,10 @@ function forum_head(string $title): void
 function forum_bar(?array $user): void
 {
     echo '<header class="fbar"><div class="wrap">';
-    echo '<a class="brand" href="../../index.php">' . BRAND_CHIP . 'Shellyx</a>';
+	echo '<a class="brand" href="../../index.php" aria-label="Shellyx inicio">'
+       	. '<img class="brand-logo" src="/assets/img/logo.webp" alt="Shellyx" '
+       	. 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">'
+       	. '<span class="brand-fallback" style="display:none">' . BRAND_CHIP . 'Shellyx</span></a>';
     echo '<nav class="mainnav"><a href="index.php" class="on">Foros</a><a href="index.php">Novedades</a><a href="index.php">Miembros</a></nav>';
     echo '<div class="search">' . SEARCH_ICON . '<input type="text" placeholder="Buscar en el foro…" aria-label="Buscar"></div>';
     echo '<div class="session">';

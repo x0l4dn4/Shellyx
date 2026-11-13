@@ -52,6 +52,8 @@ p{margin:0}
 .brand{display:inline-flex;align-items:center;gap:9px;color:var(--text);
   font-weight:700;font-size:18px;letter-spacing:-.01em}
 .brand:hover{color:var(--text)}
+.brand-logo{height:30px;width:auto;display:block}
+.brand-fallback{display:inline-flex;align-items:center;gap:9px}
 .brand .chip{display:grid;place-items:center;width:28px;height:28px;border-radius:7px;flex:none;
   background:linear-gradient(145deg,#1f2a30,#12303a);border:1px solid var(--border-strong)}
 .brand .chip svg{width:16px;height:16px;stroke:var(--accent)}
