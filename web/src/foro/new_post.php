@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/lib/auth.php';
+require_once __DIR__ . '/lib/layout.php';
+
+// ESCRITURA GATEADA: crear un hilo exige sesión. Aquí entra embed_url, el vector
+// que post.php incluye -> RFI. Mantener este gating preserva la cadena del reto.
 require_login();
 $u = current_user();
 
@@ -7,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'] ?? '';
     $body  = $_POST['body'] ?? '';
     $embed = $_POST['embed_url'] ?? '';
+    // INSERT con sentencia preparada (category toma su DEFAULT 'general').
     $stmt = mysqli_prepare(
         db(),
         "INSERT INTO posts (user_id, title, body, embed_url) VALUES (?,?,?,?)"
@@ -18,37 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-require_once __DIR__ . '/../lib/layout.php';
-sx_header('Nueva publicación — Foro Shellyx', 'foro', $u);
+forum_head('Nueva publicación — Shellyx');
+forum_bar($u);
+forum_breadcrumb([['Inicio', 'index.php'], ['Nueva publicación', null]]);
 ?>
-<section class="section">
-  <div class="container narrow" style="max-width:720px">
-    <div class="forum-head" style="margin-bottom:18px">
-      <div>
-        <span class="eyebrow">Foro</span>
-        <h1 style="margin:0">Nueva publicación</h1>
-      </div>
-      <a class="btn btn--muted btn--sm" href="index.php">&larr; Volver</a>
+<section class="compose"><div class="wrap">
+  <form class="compose-card" method="post" action="new_post.php">
+    <h1>Nueva publicación</h1>
+    <div class="field"><label for="t">Título</label><input id="t" name="title" type="text" placeholder="Título del hilo"></div>
+    <div class="field"><label for="b">Contenido</label><textarea id="b" name="body" placeholder="Escribe tu mensaje…"></textarea></div>
+    <div class="field">
+      <label for="emb">URL de recurso a incrustar (opcional)</label>
+      <input id="emb" name="embed_url" type="text" placeholder="https://…">
+      <p class="hint">Se mostrará una vista previa del recurso dentro de la publicación.</p>
     </div>
-
-    <div class="panel panel--pad">
-      <form method="post" action="new_post.php">
-        <div class="field">
-          <label for="title">Título</label>
-          <input type="text" id="title" name="title" placeholder="Título de la publicación">
-        </div>
-        <div class="field">
-          <label for="body">Contenido</label>
-          <textarea id="body" name="body" placeholder="Comparte tu módulo, script o duda con la comunidad..."></textarea>
-        </div>
-        <div class="field">
-          <label for="embed_url">URL de recurso a incrustar <span class="muted">(opcional)</span></label>
-          <input type="text" id="embed_url" name="embed_url" placeholder="https://ejemplo.com/recurso.php">
-          <small class="muted mono" style="font-size:.76rem">Se mostrará una vista previa del recurso dentro de la publicación.</small>
-        </div>
-        <button class="btn btn--primary" type="submit"><?= sx_icon('bolt', 18) ?> Publicar</button>
-      </form>
+    <div class="compose-actions">
+      <a class="btn btn-ghost" href="index.php">Cancelar</a>
+      <button class="btn btn-accent" type="submit">Publicar</button>
     </div>
-  </div>
-</section>
-<?php sx_footer(); ?>
+  </form>
+</div></section>
+<?php forum_footer(); ?>

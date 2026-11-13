@@ -17,3 +17,12 @@ assert_contains() {
     fail "$3 (no se encontró: $2)"
   fi
 }
+
+# assert_not_contains <haystack> <needle> <nombre>
+assert_not_contains() {
+  if printf '%s' "$1" | grep -qF -- "$2"; then
+    fail "$3 (no debía contener: $2)"
+  else
+    pass "$3"
+  fi
+}
