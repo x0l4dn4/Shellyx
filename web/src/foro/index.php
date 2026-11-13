@@ -110,7 +110,7 @@ forum_bar($user);
             <article class="fh-card fh-dev" style="--g:<?= $g['color'] ?>">
               <a class="fh-thumb" href="dispositivo.php?id=<?= (int)$pid ?>"><?= dev_thumb($pid) ?><?php $slug = $PROD_SLUG[$pid] ?? ''; if ($slug !== ''): ?><img src="/assets/img/productos/<?= $slug ?>.jpg" alt="<?= e($p['name']) ?>" loading="lazy" onerror="this.remove()"><?php endif; ?></a>
               <div class="fh-b">
-                <h3><a href="dispositivo.php?id=<?= (int)$pid ?>"><?= e($p['name']) ?></a><span class="fh-price"><?= (int)$p['price'] ?> €</span></h3>
+                <h3><a href="dispositivo.php?id=<?= (int)$pid ?>"><?= e($p['name']) ?></a><span class="fh-price"><?= e($p['price']) ?> €</span></h3>
                 <div class="fh-counts"><span><b><?= $t ?></b> hilos</span><span><b><?= $m ?></b> mensajes</span></div>
               </div>
             </article>

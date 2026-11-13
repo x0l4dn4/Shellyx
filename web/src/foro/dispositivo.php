@@ -31,7 +31,7 @@ forum_bar($user);
 <?php forum_breadcrumb([['Inicio', 'index.php'], ['Dispositivos', 'index.php'], [$product['name'], null]]); ?>
 <div class="thread-head"><div class="wrap">
   <h1><?= e($product['name']) ?></h1>
-  <div class="th-meta"><?= e($product['description']) ?><span class="sep">·</span><?= (int)$product['price'] ?> €<span class="sep">·</span><a href="/tienda/">Ver en la tienda</a></div>
+  <div class="th-meta"><?= e($product['description']) ?><span class="sep">·</span><?= e($product['price']) ?> €<span class="sep">·</span><a href="/tienda/">Ver en la tienda</a></div>
 </div></div>
 
 <section class="posts"><div class="wrap">

@@ -8,8 +8,8 @@ $user = current_user();
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Carga del hilo con sentencia preparada.
-$stmt = mysqli_prepare(db(), "SELECT p.id, p.title, p.body, p.embed_url, p.category, p.created_at, p.user_id, u.username AS author
-                              FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
+$stmt = mysqli_prepare(db(), "SELECT p.id, p.title, p.body, p.embed_url, p.category, p.product_id, p.created_at, p.user_id, u.username AS author, pr.name AS product_name
+                              FROM posts p JOIN users u ON u.id = p.user_id LEFT JOIN products pr ON pr.id = p.product_id WHERE p.id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $res  = mysqli_stmt_get_result($stmt);
@@ -54,16 +54,21 @@ forum_bar($user);
 ?>
 <?php if ($post): ?>
 <?php
-    $catName = FORUM_CATEGORIES[$post['category']][0] ?? FORUM_CATEGORIES['general'][0];
+    if (!empty($post['product_id'])) {
+        $mid = [$post['product_name'], 'dispositivo.php?id=' . (int)$post['product_id']];
+    } else {
+        $catName = FORUM_CATEGORIES[$post['category']][0] ?? FORUM_CATEGORIES['general'][0];
+        $mid = [$catName, 'categoria.php?c=' . $post['category']];
+    }
     forum_breadcrumb([
         ['Inicio', 'index.php'],
-        [$catName, 'index.php'],
+        $mid,
         [strip_tag_prefix($post['title']), null],
     ]);
 ?>
 <div class="thread-head"><div class="wrap">
   <h1><?= render_title_with_tag($post['title']) ?></h1>
-  <div class="th-meta">iniciado por <a href="post.php?id=<?= (int)$post['id'] ?>"><?= e($post['author']) ?></a><span class="sep">·</span><?= e(hace($post['created_at'])) ?><span class="sep">·</span><?= count($replies) ?> <?= count($replies) == 1 ? 'respuesta' : 'respuestas' ?></div>
+  <div class="th-meta">iniciado por <a href="perfil.php?u=<?= urlencode($post['author']) ?>"><?= e($post['author']) ?></a><span class="sep">·</span><?= e(hace($post['created_at'])) ?><span class="sep">·</span><?= count($replies) ?> <?= count($replies) == 1 ? 'respuesta' : 'respuestas' ?></div>
 </div></div>
 
 <section class="posts"><div class="wrap">
