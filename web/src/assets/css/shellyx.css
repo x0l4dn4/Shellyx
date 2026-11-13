@@ -1,7 +1,7 @@
 /* ============================================================
    Shellyx — hardware hacking tools
    Tema oscuro tipo terminal. Fuentes del sistema (sin CDN) para
-   funcionar sin conexión dentro del laboratorio Docker.
+   funcionar sin conexión.
    ============================================================ */
 
 :root {
@@ -293,10 +293,6 @@ table.data td:nth-child(2) { color: var(--green); font-family: var(--mono); }
 .footer__bottom { border-top: 1px solid var(--panel-line); padding: 18px 0; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; color: var(--muted-2); font-family: var(--mono); font-size: .8rem; }
 .pay { display: flex; gap: 8px; flex-wrap: wrap; }
 .pay span { font-family: var(--mono); font-size: .72rem; color: var(--green); border: 1px solid var(--green-line); border-radius: 6px; padding: 3px 8px; background: var(--green-soft); }
-
-/* ---------- aviso del laboratorio ---------- */
-.labnote { background: rgba(255,207,93,.06); border-bottom: 1px solid rgba(255,207,93,.2); color: var(--amber); font-family: var(--mono); font-size: .78rem; }
-.labnote .container { padding-top: 8px; padding-bottom: 8px; display: flex; gap: 10px; align-items: center; justify-content: center; text-align: center; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 920px) {

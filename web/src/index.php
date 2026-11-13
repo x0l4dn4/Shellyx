@@ -23,7 +23,7 @@ sx_header('Shellyx — Hardware Hacking Tools', 'inicio');
     </div>
 
     <div class="terminal" aria-hidden="true">
-      <div class="terminal__bar"><i></i><i></i><i></i><span>shellyx@lab: ~</span></div>
+      <div class="terminal__bar"><i></i><i></i><i></i><span>root@shellyx:~</span></div>
       <div class="terminal__body">
         <div><span class="pr">$</span> <span class="cm">shellyx flash --module wifi_recon</span></div>
         <div class="out">[*] Detectando dispositivo en /dev/ttyUSB0</div>

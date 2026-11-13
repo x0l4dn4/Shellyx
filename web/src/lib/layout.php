@@ -2,10 +2,8 @@
 /**
  * Shellyx — capa de presentación compartida (tienda + foro + landing).
  *
- * Solo maquetación/estética. No altera ninguna lógica de la aplicación ni las
- * vulnerabilidades didácticas del laboratorio (SQLi en el buscador, RFI en el
- * post). Rutas absolutas desde el DocumentRoot, así sirve igual en /tienda,
- * /foro y la raíz.
+ * Solo maquetación/estética; no altera ninguna lógica de la aplicación. Rutas
+ * absolutas desde el DocumentRoot, así sirve igual en /tienda, /foro y la raíz.
  */
 
 if (!function_exists('e')) {

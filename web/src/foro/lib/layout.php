@@ -1,8 +1,7 @@
 <?php
 // Presentación compartida del foro (estilo XenForo/XDA). Solo marcado y helpers
 // de vista; la autenticación vive en lib/auth.php. Toda salida de datos de BD
-// pasa por e() — el foro NO es vulnerable a XSS; la única vuln del foro es la RFI
-// de post.php vía include($embed_url).
+// pasa por e().
 
 // Categorías (nodos). La clave es el valor de posts.category.
 const FORUM_CATEGORIES = [

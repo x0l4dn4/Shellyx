@@ -2,8 +2,7 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// ESCRITURA GATEADA: crear un hilo exige sesión. Aquí entra embed_url, el vector
-// que post.php incluye -> RFI. Mantener este gating preserva la cadena del reto.
+// Crear un hilo exige sesión. embed_url se muestra como vista previa en el hilo.
 require_login();
 $u = current_user();
 

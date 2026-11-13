@@ -17,8 +17,7 @@ CREATE TABLE users (
   password_md5 CHAR(32)
 );
 
--- Foro: hilos (posts) y respuestas (replies). La RFI vive en posts.embed_url,
--- que se incluye en post.php. Las respuestas no tienen embed_url.
+-- Foro: hilos (posts) y respuestas (replies).
 CREATE TABLE posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
@@ -39,8 +38,7 @@ CREATE TABLE replies (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4;
 
--- Catálogo Shellyx: gadgets de hardware hacking (gama de entrada < 100 EUR y
--- gama avanzada). Editable a gusto; el buscador sigue siendo UNION-vulnerable.
+-- Catálogo Shellyx: gadgets de hardware hacking. Editable a gusto.
 INSERT INTO products (name, price, description) VALUES
   ('Shellyx One',            79.00,  'Gadget multiherramienta programable: WiFi, BLE y sub-GHz en un bolsillo. Ideal para empezar.'),
   ('Shellyx Mini',           39.00,  'Dispositivo de entrada por USB para automatizar pulsaciones y cargar tus primeros scripts.'),
@@ -52,7 +50,7 @@ INSERT INTO products (name, price, description) VALUES
   ('Kit Educativo B2B',      299.00,  'Pack para aulas: 4 dispositivos, modulos y acceso a los retos mensuales del foro.'),
   ('Pack Firmwares Oficiales', 19.00, 'Licencia de pago unico de la coleccion de firmwares y scripts oficiales. Mas barato junto al gadget.');
 
--- Usuarios del foro: contraseñas del top 1000 de rockyou, guardadas como MD5.
+-- Usuarios del foro.
 INSERT INTO users (username, password_md5) VALUES
   ('admin',     MD5('letmein')),
   ('moderador', MD5('password')),
@@ -67,9 +65,7 @@ SET @js    := (SELECT id FROM users WHERE username = 'jsanchez');
 SET @ml    := (SELECT id FROM users WHERE username = 'mlopez');
 SET @ag    := (SELECT id FROM users WHERE username = 'agarcia');
 
--- Hilos sembrados (foro "vivo"): gadgets de hardware hacking inventados.
--- embed_url vacío: ningún RFI accidental en páginas públicas; el vector lo mete
--- un atacante autenticado vía new_post.php.
+-- Hilos sembrados de la comunidad: gadgets de hardware hacking inventados.
 INSERT INTO posts (id, user_id, title, body, embed_url, category, created_at) VALUES
 (1, @admin,
  '[FIRMWARE] Shellyx Nibbler v2.3 — soporte 915 MHz y lector NFC mejorado',
@@ -85,7 +81,7 @@ INSERT INTO posts (id, user_id, title, body, embed_url, category, created_at) VA
  '', 'firmware', NOW() - INTERVAL 9 DAY),
 (4, @ag,
  '[MÓDULO] QuackPad Mini: payload de exfil WiFi en Windows 11',
- 'Payload para el QuackPad Mini que saca el perfil WiFi (SSID y clave en claro) en Windows 11 y lo manda por HTTP a tu host.\n\nEstá pensado para demos controladas. No lo uséis fuera de un laboratorio.\n\nSi Defender os corta el netsh, meted un pequeño retardo al inicio.',
+ 'Payload para el QuackPad Mini que saca el perfil WiFi (SSID y clave en claro) en Windows 11 y lo manda por HTTP a tu host.\n\nEstá pensado para demos controladas. No lo uséis fuera de un entorno controlado.\n\nSi Defender os corta el netsh, meted un pequeño retardo al inicio.',
  '', 'payloads', NOW() - INTERVAL 4 DAY),
 (5, @ml,
  'Colección de payloads DuckyScript para el GhostTap X1',
@@ -113,7 +109,7 @@ INSERT INTO posts (id, user_id, title, body, embed_url, category, created_at) VA
  '', 'general', NOW() - INTERVAL 12 DAY),
 (11, @mod,
  'Normas del foro y cómo pedir ayuda con un brick',
- 'Bienvenidos a Shellyx. Normas rápidas:\n\n1. Nada de datos ni credenciales reales de terceros en los payloads.\n2. Todo lo que se comparte aquí es para laboratorio y uso controlado.\n3. Antes de abrir un hilo de brick, mirad la guía fijada y pegad el log completo.\n\nGracias por mantener la comunidad sana.',
+ 'Bienvenidos a Shellyx. Normas rápidas:\n\n1. Nada de datos ni credenciales reales de terceros en los payloads.\n2. Todo lo que se comparte aquí es para uso responsable y controlado.\n3. Antes de abrir un hilo de brick, mirad la guía fijada y pegad el log completo.\n\nGracias por mantener la comunidad sana.',
  '', 'general', NOW() - INTERVAL 15 DAY);
 
 -- Respuestas sembradas (1-5 por usuario), para que los hilos se vean con conversación.
