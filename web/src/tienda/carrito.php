@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../lib/cart.php';
+require_once __DIR__ . '/../lib/shop_auth.php';
+shop_require_login();
 sx_cart_start();
 
 // Acciones del carrito (POST -> redirect -> GET, para no reenviar el formulario).

@@ -51,6 +51,7 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
         'foro'   => ['/foro/',   'Foro'],
         'docs'   => ['/docs/',   'Docs'],
     ];
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
     // Contador del carrito (si hay sesión activa con carrito). Seguro si no la hay.
     $cartCount = 0;
     if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['sx_cart'])) {
@@ -84,6 +85,14 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
       <?php if ($user): ?>
         <span class="nav__user">// <b><?= e($user['username']) ?></b></span>
         <a href="/foro/logout.php">Salir</a>
+      <?php endif; ?>
+      <?php $cust = !empty($_SESSION['cust_name']) ? $_SESSION['cust_name'] : null; ?>
+      <?php if ($cust !== null): ?>
+        <span class="nav__user">// <b><?= e($cust) ?></b></span>
+        <a href="/tienda/logout.php">Salir</a>
+      <?php else: ?>
+        <a href="/tienda/login.php">Acceder</a>
+        <a href="/tienda/registro.php">Registrarse</a>
       <?php endif; ?>
     </div>
   </div>

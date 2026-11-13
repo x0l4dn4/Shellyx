@@ -174,3 +174,14 @@ INSERT INTO replies (post_id, user_id, body, created_at) VALUES
 (12, @admin, 'Bienvenido. Mira el hilo de normas y el de firmware fijado; con eso no te pierdes. Cualquier cosa, pregunta por aquí.', NOW() - INTERVAL 20 HOUR),
 (15, @js,    '¿Confirmas si los pines de la fila de arriba toleran 5V con divisor? No quiero cargarme la placa.', NOW() - INTERVAL 100 HOUR),
 (16, @ml,    'A mí en un sitio con mucho AP me baja un poco, pero aguanta. Con el módulo bien orientado mejora bastante.', NOW() - INTERVAL 60 HOUR);
+
+-- Cuentas de la tienda (clientes). Registro abierto desde la tienda; separadas de
+-- los usuarios del foro. Una cuenta de ejemplo para la demo.
+CREATE TABLE customers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(64) UNIQUE,
+  password_md5 CHAR(32)
+) DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO customers (username, password_md5) VALUES
+  ('demo', MD5('demo1234'));
