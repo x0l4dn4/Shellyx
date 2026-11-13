@@ -26,7 +26,9 @@ CREATE TABLE posts (
   body TEXT,
   embed_url VARCHAR(512),
   category VARCHAR(32) NOT NULL DEFAULT 'general',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  product_id INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_posts_product (product_id)
 ) DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE replies (
@@ -136,3 +138,43 @@ INSERT INTO replies (post_id, user_id, body, created_at) VALUES
 (9, @js,    '¿Merece la pena el salto solo por el sub-GHz? Lo tengo en el carrito.', NOW() - INTERVAL 72 HOUR),
 (9, @admin, 'Buen unboxing. El front-end nuevo se nota en el alcance a 433. Para mí vale el cambio.', NOW() - INTERVAL 26 HOUR),
 (10, @ml,   '¡Bienvenido! El Pwnapet engancha, en nada tienes la mochila llena de handshakes. ¿Ya le pusiste pantalla e-ink?', NOW() - INTERVAL 72 HOUR);
+
+-- Subforos de dispositivo: hilos sembrados por producto (ids de producto 1..9,
+-- en el orden del INSERT de products). category queda en su DEFAULT.
+INSERT INTO posts (id, user_id, title, body, embed_url, product_id, created_at) VALUES
+(12, @js,  'Primer contacto con el Shellyx One: ¿por dónde empiezo?',
+ 'Acabo de recibir el Shellyx One y va genial. ¿Qué me recomendáis para las primeras pruebas? Busco algo sencillo para ir cogiendo soltura con el menú y los módulos.',
+ '', 1, NOW() - INTERVAL 2 DAY),
+(13, @ag,  'Shellyx One: mi set de scripts favoritos',
+ 'Dejo los scripts que más uso en el One: lectura rápida de tags, un par de utilidades de radio y uno para ordenar capturas en la SD. Si queréis los subo al hilo.',
+ '', 1, NOW() - INTERVAL 5 DAY),
+(14, @ml,  'El Mini no monta como teclado en algunos portátiles',
+ 'Con el Shellyx Mini me pasa que en ciertos portátiles tarda mucho en montar como teclado o no lo hace. ¿A vosotros os va bien con un DELAY alto al principio?',
+ '', 2, NOW() - INTERVAL 3 DAY),
+(15, @admin, 'GPIO del Pro: pinout y niveles lógicos',
+ 'Abro hilo de referencia para el GPIO del Shellyx Pro. Son 3V3, no metáis 5V directos. Adjunto el pinout en el primer comentario. Preguntad dudas por aquí.',
+ '', 3, NOW() - INTERVAL 6 DAY),
+(16, @ag,  'Rendimiento de captura del módulo WiFi Recon',
+ 'He estado midiendo el módulo WiFi Recon en 2.4 GHz y la captura es estable. ¿Qué cifras os salen a vosotros en un entorno con mucho ruido?',
+ '', 4, NOW() - INTERVAL 4 DAY),
+(17, @ml,  'Alcance real del módulo Sub-GHz con antena externa',
+ 'Con el módulo Sub-GHz y una antena decente el alcance a 433 MHz mejora bastante. ¿Hasta dónde habéis llegado en condiciones normales?',
+ '', 5, NOW() - INTERVAL 7 DAY),
+(18, @js,  '¿Merece la pena la antena de alta ganancia para 433?',
+ 'Dudando entre quedarme con la antena de serie o pasar a la de alta ganancia para trabajar a 433 MHz. ¿Se nota mucho el salto?',
+ '', 6, NOW() - INTERVAL 8 DAY),
+(19, @ag,  'Montaje de la carcasa translúcida sin romper las pestañas',
+ 'Truco rápido para montar la carcasa translúcida: haced palanca por las esquinas y con cuidado, que las pestañas son finas. La guía de luz del LED queda muy bien.',
+ '', 7, NOW() - INTERVAL 9 DAY),
+(20, @mod, 'Usando el Kit Educativo en clase: ideas de prácticas',
+ 'Vamos a usar el Kit Educativo B2B en un aula. Busco ideas de prácticas progresivas para empezar de cero. Si tenéis material que haya funcionado, se agradece.',
+ '', 8, NOW() - INTERVAL 10 DAY),
+(21, @js,  '¿Qué incluye exactamente el Pack de Firmwares?',
+ 'Antes de comprar el Pack de Firmwares Oficiales, ¿alguien confirma qué builds entran y si se actualiza? Gracias.',
+ '', 9, NOW() - INTERVAL 6 DAY);
+
+INSERT INTO replies (post_id, user_id, body, created_at) VALUES
+(12, @ml,    'Empieza por el menú de radio y lee algún mando que tengas por casa; es la forma más rápida de ver que todo va. Luego ya pasas a NFC.', NOW() - INTERVAL 40 HOUR),
+(12, @admin, 'Bienvenido. Mira el hilo de normas y el de firmware fijado; con eso no te pierdes. Cualquier cosa, pregunta por aquí.', NOW() - INTERVAL 20 HOUR),
+(15, @js,    '¿Confirmas si los pines de la fila de arriba toleran 5V con divisor? No quiero cargarme la placa.', NOW() - INTERVAL 100 HOUR),
+(16, @ml,    'A mí en un sitio con mucho AP me baja un poco, pero aguanta. Con el módulo bien orientado mejora bastante.', NOW() - INTERVAL 60 HOUR);
