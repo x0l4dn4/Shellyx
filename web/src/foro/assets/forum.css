@@ -130,6 +130,8 @@ p{margin:0}
 .threads.simple .thread{grid-template-columns:40px 1fr auto}
 .dev-actions{display:flex;align-items:center;justify-content:space-between;
   padding:4px 2px 14px;color:var(--muted);font-size:13.5px}
+.profile-head{display:flex;align-items:center;gap:16px}
+.profile-head h1{font-size:22px;font-weight:600}
 
 /* ---- thread view ---- */
 .thread-head{padding-block:18px 2px}

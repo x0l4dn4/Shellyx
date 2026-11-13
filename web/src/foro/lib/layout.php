@@ -107,7 +107,7 @@ function usercard_html(string $author, int $msgCount): string
     $since = member_since($author);
     $h  = '<aside class="usercard">';
     $h .= avatar_html($author, 'uc-ava');
-    $h .= '<a class="uc-name" href="index.php">' . e($author) . '</a>';
+    $h .= '<a class="uc-name" href="perfil.php?u=' . urlencode($author) . '">' . e($author) . '</a>';
     $h .= '<span class="role ' . $roleClass . '">' . e($roleLabel) . '</span>';
     $h .= '<dl class="uc-stats"><div><dt>Mensajes</dt><dd>' . number_format($msgCount, 0, ',', '.') . '</dd></div>';
     $h .= '<div><dt>Desde</dt><dd>' . $since . '</dd></div></dl>';
@@ -140,7 +140,7 @@ function forum_bar(?array $user): void
     echo '<div class="session">';
     if ($user) {
         echo '<a class="btn btn-accent" href="new_post.php">Nueva publicación</a>';
-        echo '<span class="me">' . avatar_html($user['username'], 'me-ava') . '<span class="me-name">' . e($user['username']) . '</span></span>';
+        echo '<a class="me" href="perfil.php?u=' . urlencode($user['username']) . '">' . avatar_html($user['username'], 'me-ava') . '<span class="me-name">' . e($user['username']) . '</span></a>';
         echo '<a class="btn btn-ghost" href="logout.php">Salir</a>';
     } else {
         echo '<a class="btn btn-ghost" href="register.php">Registrarse</a>';
