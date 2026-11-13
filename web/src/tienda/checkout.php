@@ -4,8 +4,8 @@ sx_cart_start();
 
 $coins = sx_coins();
 
-// Confirmar pago (SIMULADO): genera un pedido, vacía el carrito y guarda un
-// "flash" en sesión para mostrar la confirmación tras el redirect.
+// Confirmar el pedido: lo genera, vacía el carrito y guarda un "flash" en
+// sesión para mostrar la confirmación tras el redirect.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'pay') {
     $cart = sx_cart_items();
     $coinKey = strtolower($_POST['coin'] ?? 'xmr');
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'pay')
     exit;
 }
 
-// Vista de confirmación (tras el pago simulado).
+// Vista de confirmación del pedido.
 $order = null;
 if (isset($_GET['ok']) && !empty($_SESSION['sx_last_order'])) {
     $order = $_SESSION['sx_last_order'];

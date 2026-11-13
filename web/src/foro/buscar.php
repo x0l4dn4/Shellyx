@@ -2,8 +2,7 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// Buscador del foro (lectura pública). Sentencias PREPARADAS: el único SQLi
-// del laboratorio sigue siendo el buscador de la tienda.
+// Buscador del foro.
 $user = current_user();
 $q = trim($_GET['q'] ?? '');
 

@@ -2,9 +2,8 @@
 /**
  * Shellyx — capa de presentación compartida (tienda + foro + landing).
  *
- * Solo maquetación/estética. No altera ninguna lógica de la aplicación ni las
- * vulnerabilidades didácticas del laboratorio (SQLi en el buscador, RFI en el
- * post). Rutas absolutas desde el DocumentRoot, así sirve igual en /tienda,
+ * Solo maquetación/estética. No altera ninguna lógica de la aplicación.
+ * Rutas absolutas desde el DocumentRoot, así sirve igual en /tienda,
  * /foro y la raíz.
  */
 
@@ -52,7 +51,7 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
         'tienda' => ['/tienda/', 'Tienda'],
         'foro'   => ['/foro/',   'Foro'],
     ];
-    // Contador del carrito (si hay sesión activa con carrito). Seguro si no la hay.
+    // Contador del carrito.
     $cartCount = 0;
     if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['sx_cart'])) {
         $cartCount = (int)array_sum($_SESSION['sx_cart']);

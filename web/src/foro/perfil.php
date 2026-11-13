@@ -2,8 +2,7 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// LECTURA PÚBLICA: los perfiles se ven sin sesión. Sin ?u= es "mi perfil",
-// que sí exige sesión. Consultas preparadas (el único SQLi es el de la tienda).
+// Perfil de un usuario. Sin ?u= muestra el del usuario en sesión.
 $user = current_user();
 $name = trim($_GET['u'] ?? '');
 if ($name === '') {

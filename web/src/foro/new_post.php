@@ -2,8 +2,7 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// ESCRITURA GATEADA: crear un hilo exige sesión. Aquí entra embed_url, el vector
-// que post.php incluye -> RFI. Mantener este gating preserva la cadena del reto.
+// Crear un hilo.
 require_login();
 $u = current_user();
 
@@ -11,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'] ?? '';
     $body  = $_POST['body'] ?? '';
     $embed = $_POST['embed_url'] ?? '';
-    // INSERT con sentencia preparada (category toma su DEFAULT 'general').
+    // Inserta el hilo (category toma su DEFAULT 'general').
     $stmt = mysqli_prepare(
         db(),
         "INSERT INTO posts (user_id, title, body, embed_url) VALUES (?,?,?,?)"

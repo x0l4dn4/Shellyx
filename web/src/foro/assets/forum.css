@@ -287,9 +287,12 @@ a.me:hover{background:var(--surface-2);color:var(--text)}
 .feed-item > .fi-head{flex:1}
 .feed-item:not(:has(.fi-main)){flex-direction:column;gap:2px}
 
-/* vista previa RFI fallida */
-.embed-fail{margin-top:12px;font-family:var(--font-mono);font-size:12.5px;color:var(--faint);
-  border:1px dashed var(--border-strong);border-radius:7px;padding:9px 12px}
+/* recurso incrustado: enlace externo validado */
+.embed-link,.embed-fail{margin-top:12px;font-size:13px;border:1px dashed var(--border-strong);
+  border-radius:7px;padding:10px 12px}
+.embed-link{background:var(--accent-wash)}
+.embed-link a{font-family:var(--font-mono);overflow-wrap:anywhere}
+.embed-fail{font-family:var(--font-mono);font-size:12.5px;color:var(--faint)}
 
 /* ---- footer ---- */
 .foot{border-top:1px solid var(--border);background:var(--bg);margin-top:10px}

@@ -2,8 +2,7 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// LECTURA PÚBLICA: el índice se ve sin sesión. Publicar sigue exigiendo login
-// (new_post.php), así que la RFI sigue requiriendo credenciales crackeadas.
+// Índice del foro.
 $user = current_user();
 
 // Hilos + autor.

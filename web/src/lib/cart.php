@@ -2,9 +2,8 @@
 /**
  * Carrito de la tienda Shellyx (solo presentación/e-commerce de escaparate).
  *
- * El carrito vive en la SESIÓN PHP; no toca la base de datos ni el esquema del
- * CTF. No añade ninguna vulnerabilidad: los ids se castean a int y los datos de
- * producto se leen con sentencias preparadas. El pago es SIMULADO.
+ * El carrito vive en la sesión PHP. Los datos de producto se leen de la BD por
+ * id. El pago es de demostración.
  */
 require_once __DIR__ . '/db.php';
 
@@ -99,7 +98,7 @@ function sx_eur(float $v): string
     return number_format($v, 2, ',', '.') . ' €';
 }
 
-/** Monedas aceptadas (pago simulado) con tasa EUR/unidad de ejemplo y dirección de muestra. */
+/** Monedas aceptadas con tasa EUR/unidad de ejemplo y dirección de muestra. */
 function sx_coins(): array
 {
     return [
@@ -112,7 +111,7 @@ function sx_coins(): array
     ];
 }
 
-/** Importe en cripto (simulado) para un total en EUR. */
+/** Importe en cripto para un total en EUR. */
 function sx_crypto_amount(float $eur, array $coin): string
 {
     if ($coin['rate'] <= 0) return '0';

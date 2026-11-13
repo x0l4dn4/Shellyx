@@ -5,8 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../../lib/db.php';
 
-// Login con sentencia PREPARADA: la única SQLi del reto es la del buscador
-// de la tienda. Si el login fuera inyectable, se saltaría el crackeo.
 function attempt_login(string $u, string $p): bool
 {
     $stmt = mysqli_prepare(

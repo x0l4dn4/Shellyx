@@ -2,7 +2,7 @@
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
 
-// LECTURA PÚBLICA: la lista de miembros se ve sin sesión.
+// Lista de miembros.
 $user = current_user();
 
 $members = [];
