@@ -81,7 +81,7 @@ sx_header('Carrito — Shellyx', 'tienda', null, 'Tu carrito en la tienda Shelly
           <div class="sum-row sum-row--muted"><span>Envío</span><span class="mono">Gratis</span></div>
           <div class="sum-row sum-row--total"><span>Total</span><span class="mono accent"><?= sx_eur($cart['total']) ?></span></div>
           <a class="btn btn--primary btn--block" href="checkout.php" style="margin-top:16px"><?= sx_icon('crypto', 18) ?> Finalizar compra</a>
-          <p class="muted mono center" style="font-size:.74rem;margin:12px 0 0">Pago anónimo en XMR · BTC · ETH</p>
+          <p class="muted mono center" style="font-size:.74rem;margin:12px 0 0">Pago en cripto · XMR · BTC · ETH</p>
         </aside>
       </div>
     <?php endif; ?>
