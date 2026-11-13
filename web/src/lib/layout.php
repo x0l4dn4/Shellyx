@@ -119,13 +119,13 @@ function sx_footer(): void
         <h4>Comunidad</h4>
         <a href="/foro/">Foro</a>
         <a href="https://github.com/x0l4dn4/Shellyx" target="_blank" rel="noopener">GitHub</a>
-        <a href="/#comunidad">Retos mensuales</a>
+        <a href="/#retos">Retos mensuales</a>
       </div>
       <div>
         <h4>Empresa</h4>
         <a href="/#empresa">Sobre Shellyx</a>
         <a href="/#privacidad">Privacidad</a>
-        <a href="/#empresa">Uso ético</a>
+        <a href="/#etica">Uso ético</a>
       </div>
     </div>
     <div class="footer__bottom">

@@ -137,4 +137,26 @@ sx_header('Shellyx — Hardware Hacking Tools', 'inicio');
   </div>
 </section>
 
+<!-- ===================== RETOS MENSUALES ===================== -->
+<section class="section" id="retos">
+  <div class="container">
+    <span class="eyebrow">Comunidad</span>
+    <h2>Retos mensuales</h2>
+    <p class="lead">Cada mes publicamos un reto práctico en el foro: un escenario para trastear con los gadgets, compartir tu solución y aprender de la de los demás. Hay un hilo por reto y una categoría donde quedan archivados para que puedas repasarlos cuando quieras.</p>
+    <div class="band__inner" style="padding:28px 0 0">
+      <div class="pay"><span>Firmware</span><span>Radio</span><span>NFC</span><span>WiFi</span></div>
+      <a class="btn btn--primary" href="/foro/"><?= sx_icon('bolt', 18) ?> Ir al foro</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== USO ÉTICO ===================== -->
+<section class="section section--tight" id="etica">
+  <div class="container">
+    <span class="eyebrow">Uso responsable</span>
+    <h2>Uso ético y legal</h2>
+    <p class="lead">Los dispositivos de Shellyx son herramientas de aprendizaje y auditoría. Úsalos solo sobre sistemas y redes de tu propiedad o para los que tengas permiso explícito por escrito, y nunca con datos o credenciales de terceros. El uso que hagas del hardware y del software es responsabilidad tuya.</p>
+  </div>
+</section>
+
 <?php sx_footer(); ?>
