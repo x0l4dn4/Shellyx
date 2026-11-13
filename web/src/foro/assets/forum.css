@@ -320,7 +320,6 @@ a.me:hover{background:var(--surface-2);color:var(--text)}
   .uc-stats{width:auto;margin:0 0 0 auto;border-top:none;padding-top:0}
   .node-head .ns{display:none}
   .members{grid-template-columns:1fr}
-  .m-stats div:last-child{display:none}
   .pf-stats{width:100%;justify-content:flex-start;text-align:left}
   .pf-action{width:100%;justify-content:center}
 }
@@ -419,3 +418,31 @@ a.me:hover{background:var(--surface-2);color:var(--text)}
   .col-left,.col-right{position:static}
   .dev-grid{grid-template-columns:1fr}
 }
+
+/* ===== rangos y reputación: nombres con color y brillo ===== */
+.uname{font-weight:600}
+a.uname:hover{text-decoration:none;filter:brightness(1.18)}
+/* color del nombre por rango */
+.rk-admin   { color:#ff7a7a }
+.rk-mod     { color:#ffd166 }
+.rk-legend  { color:#8bffb5; text-shadow:0 0 10px rgba(50,251,112,.75) }
+.rk-expert  { color:#5cff92; text-shadow:0 0 8px rgba(50,251,112,.5) }
+.rk-veteran { color:var(--accent); text-shadow:0 0 6px rgba(50,251,112,.35) }
+.rk-member  { color:var(--text) }
+.rk-rookie  { color:var(--muted) }
+/* brillo extra en los nombres grandes (tarjeta de post y perfil) */
+.uc-name.rk-admin,.pf-main h1.rk-admin   { text-shadow:0 0 12px rgba(255,122,122,.55) }
+.uc-name.rk-mod,.pf-main h1.rk-mod       { text-shadow:0 0 12px rgba(255,209,102,.5) }
+.uc-name.rk-legend,.pf-main h1.rk-legend { text-shadow:0 0 16px rgba(50,251,112,.85) }
+.uc-name.rk-expert,.pf-main h1.rk-expert { text-shadow:0 0 12px rgba(50,251,112,.6) }
+
+/* chip de rango */
+.rank{display:inline-block;font-size:11px;font-weight:600;font-family:var(--font-mono);
+  padding:1px 8px;border-radius:5px;margin-top:2px;border:1px solid transparent}
+.rank.rk-admin  { background:rgba(255,122,122,.15); color:#ff9a9a; border-color:rgba(255,122,122,.3) }
+.rank.rk-mod    { background:rgba(255,209,102,.14); color:#ffd87a; border-color:rgba(255,209,102,.3) }
+.rank.rk-legend { background:var(--accent-wash); color:#8bffb5; border-color:var(--border-strong) }
+.rank.rk-expert { background:var(--accent-wash); color:#5cff92 }
+.rank.rk-veteran{ background:var(--accent-wash); color:var(--accent) }
+.rank.rk-member { background:var(--surface-3); color:var(--muted) }
+.rank.rk-rookie { background:var(--surface-3); color:var(--faint) }

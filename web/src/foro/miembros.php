@@ -32,16 +32,19 @@ forum_breadcrumb([['Inicio', 'index.php'], ['Miembros', null]]);
     <p><?= count($members) ?> miembros en la comunidad. Pulsa en uno para ver su perfil y sus mensajes.</p>
   </div>
   <div class="members">
-    <?php foreach ($members as $m): [$roleLabel, $roleClass] = member_role($m['username']); ?>
+    <?php foreach ($members as $m):
+        $rep = user_reputation($m['username']);
+        [$rankLabel, $rankClass] = user_rank($m['username'], $rep);
+    ?>
     <a class="member" href="<?= profile_url($m['username']) ?>">
       <?= avatar_html($m['username'], 't-ava') ?>
       <div class="m-main">
-        <div class="m-name"><?= e($m['username']) ?></div>
-        <div class="m-meta"><span class="role <?= $roleClass ?>"><?= e($roleLabel) ?></span><span>desde <?= member_since($m['username']) ?></span></div>
+        <div class="m-name uname <?= $rankClass ?>"><?= e($m['username']) ?></div>
+        <div class="m-meta"><span class="rank <?= $rankClass ?>"><?= e($rankLabel) ?></span><span>desde <?= member_since($m['username']) ?></span></div>
       </div>
       <dl class="m-stats">
         <div><dt>Mensajes</dt><dd><?= (int)$m['hilos'] + (int)$m['respuestas'] ?></dd></div>
-        <div><dt>Últ. actividad</dt><dd><?= $m['ultima'] ? e(hace($m['ultima'])) : '—' ?></dd></div>
+        <div><dt>Reputación</dt><dd><?= number_format($rep, 0, ',', '.') ?></dd></div>
       </dl>
     </a>
     <?php endforeach; ?>

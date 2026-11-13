@@ -80,6 +80,48 @@ function member_since(string $username): int
     return 2021 + (crc32('since:' . $username) % 4); // 2021..2024, estable por usuario
 }
 
+// Estadísticas públicas de un usuario (posts, respuestas, mensajes). Cacheadas
+// en una sola consulta por petición.
+function user_stats(string $username): array
+{
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        $q = mysqli_query(db(), "SELECT u.username,
+                (SELECT COUNT(*) FROM posts p   WHERE p.user_id = u.id) AS posts,
+                (SELECT COUNT(*) FROM replies r WHERE r.user_id = u.id) AS replies
+                FROM users u");
+        while ($q && $row = mysqli_fetch_assoc($q)) {
+            $p = (int)$row['posts']; $r = (int)$row['replies'];
+            $cache[$row['username']] = ['posts' => $p, 'replies' => $r, 'msgs' => $p + $r];
+        }
+    }
+    return $cache[$username] ?? ['posts' => 0, 'replies' => 0, 'msgs' => 0];
+}
+
+// Reputación pública derivada de la actividad.
+function user_reputation(string $username): int
+{
+    $s = user_stats($username);
+    $rep = $s['posts'] * 10 + $s['replies'] * 3;
+    if ($username === 'admin')         $rep += 400;
+    elseif ($username === 'moderador') $rep += 250;
+    return $rep;
+}
+
+// Rango dentro del foro: [etiqueta, clase] según rol y reputación.
+function user_rank(string $username, ?int $rep = null): array
+{
+    if ($username === 'admin')     return ['Administrador', 'rk-admin'];
+    if ($username === 'moderador') return ['Moderador', 'rk-mod'];
+    $rep = $rep ?? user_reputation($username);
+    if ($rep >= 250) return ['Leyenda',  'rk-legend'];
+    if ($rep >= 120) return ['Experto',  'rk-expert'];
+    if ($rep >= 60)  return ['Veterano', 'rk-veteran'];
+    if ($rep >= 20)  return ['Miembro',  'rk-member'];
+    return ['Novato', 'rk-rookie'];
+}
+
 // Fecha relativa en español. Envejece con naturalidad a lo largo de la vida del lab.
 function hace(string $datetime): string
 {
@@ -143,25 +185,31 @@ function profile_url(string $username): string
     return 'perfil.php?u=' . e(rawurlencode($username));
 }
 
-// Enlace con el nombre de usuario hacia su perfil.
+// Enlace con el nombre de usuario hacia su perfil. El color/brillo del nombre
+// depende del rango (rk-*), por reputación.
 function user_link(string $username, string $class = ''): string
 {
-    $cls = $class !== '' ? ' class="' . e($class) . '"' : '';
-    return '<a' . $cls . ' href="' . profile_url($username) . '">' . e($username) . '</a>';
+    [, $rankClass] = user_rank($username);
+    $cls = trim('uname ' . $rankClass . ' ' . $class);
+    return '<a class="' . e($cls) . '" href="' . profile_url($username) . '">' . e($username) . '</a>';
 }
 
 // Tarjeta de usuario del post bit (cadena pura, sin include dentro).
-function usercard_html(string $author, int $msgCount): string
+function usercard_html(string $author): string
 {
-    [$roleLabel, $roleClass] = member_role($author);
+    $rep = user_reputation($author);
+    [$rankLabel, $rankClass] = user_rank($author, $rep);
+    $s = user_stats($author);
     $since = member_since($author);
     $h  = '<aside class="usercard">';
     $h .= avatar_html($author, 'uc-ava');
-    $h .= '<a class="uc-name" href="' . profile_url($author) . '">' . e($author) . '</a>';
-    $h .= '<span class="role ' . $roleClass . '">' . e($roleLabel) . '</span>';
-    $h .= '<dl class="uc-stats"><div><dt>Mensajes</dt><dd>' . number_format($msgCount, 0, ',', '.') . '</dd></div>';
-    $h .= '<div><dt>Desde</dt><dd>' . $since . '</dd></div></dl>';
-    $h .= '</aside>';
+    $h .= '<a class="uc-name ' . $rankClass . '" href="' . profile_url($author) . '">' . e($author) . '</a>';
+    $h .= '<span class="rank ' . $rankClass . '">' . e($rankLabel) . '</span>';
+    $h .= '<dl class="uc-stats">';
+    $h .= '<div><dt>Mensajes</dt><dd>' . number_format($s['msgs'], 0, ',', '.') . '</dd></div>';
+    $h .= '<div><dt>Reputación</dt><dd>' . number_format($rep, 0, ',', '.') . '</dd></div>';
+    $h .= '<div><dt>Desde</dt><dd>' . $since . '</dd></div>';
+    $h .= '</dl></aside>';
     return $h;
 }
 

@@ -48,18 +48,21 @@ forum_breadcrumb([['Inicio', 'index.php'], ['Miembros', 'miembros.php'], [$profi
 <div class="notfound"><div class="wrap">
   <p>Ese miembro no existe. <a href="miembros.php">Ver la lista de miembros</a>.</p>
 </div></div>
-<?php else: [$roleLabel, $roleClass] = member_role($profile['username']); ?>
+<?php else:
+    $rep = user_reputation($profile['username']);
+    [$rankLabel, $rankClass] = user_rank($profile['username'], $rep);
+?>
 <section class="page"><div class="wrap">
   <div class="profile-card">
     <?= avatar_html($profile['username'], 'pf-ava') ?>
     <div class="pf-main">
-      <h1><?= e($profile['username']) ?><?php if ($is_me): ?> <span class="pf-you">tú</span><?php endif; ?></h1>
-      <div class="pf-meta"><span class="role <?= $roleClass ?>"><?= e($roleLabel) ?></span><span>Miembro desde <?= member_since($profile['username']) ?></span></div>
+      <h1 class="uname <?= $rankClass ?>"><?= e($profile['username']) ?><?php if ($is_me): ?> <span class="pf-you">tú</span><?php endif; ?></h1>
+      <div class="pf-meta"><span class="rank <?= $rankClass ?>"><?= e($rankLabel) ?></span><span>Miembro desde <?= member_since($profile['username']) ?></span></div>
     </div>
     <dl class="pf-stats">
       <div><dt>Hilos</dt><dd><?= count($threads) ?></dd></div>
       <div><dt>Respuestas</dt><dd><?= count($replies) ?></dd></div>
-      <div><dt>Mensajes</dt><dd><?= count($threads) + count($replies) ?></dd></div>
+      <div><dt>Reputación</dt><dd><?= number_format($rep, 0, ',', '.') ?></dd></div>
     </dl>
     <?php if ($is_me): ?><a class="btn btn-accent pf-action" href="new_post.php">Nueva publicación</a><?php endif; ?>
   </div>

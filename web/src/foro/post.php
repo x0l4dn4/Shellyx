@@ -45,13 +45,6 @@ if ($post) {
     while ($rr && $row = mysqli_fetch_assoc($rr)) { $replies[] = $row; }
 }
 
-// Nº de mensajes por usuario (para la tarjeta), indexado por nombre.
-$counts = [];
-$cq = mysqli_query(db(), "SELECT u.username, COUNT(*) c
-                          FROM (SELECT user_id FROM posts UNION ALL SELECT user_id FROM replies) t
-                          JOIN users u ON u.id = t.user_id GROUP BY u.username");
-while ($cq && $row = mysqli_fetch_assoc($cq)) { $counts[$row['username']] = (int)$row['c']; }
-
 forum_head(($post ? strip_tag_prefix($post['title']) : 'Publicación') . ' — Shellyx');
 forum_bar($user);
 ?>
@@ -82,7 +75,7 @@ forum_bar($user);
 <section class="posts"><div class="wrap">
 
   <article class="post">
-    <?= usercard_html($post['author'], $counts[$post['author']] ?? 1) ?>
+    <?= usercard_html($post['author']) ?>
     <div class="post-body">
       <div class="post-topmeta"><span><?= e(hace($post['created_at'])) ?></span><span class="num">#1</span></div>
       <div class="post-content">
@@ -105,7 +98,7 @@ forum_bar($user);
 
 <?php $n = 2; foreach ($replies as $rep): ?>
   <article class="post">
-    <?= usercard_html($rep['author'], $counts[$rep['author']] ?? 1) ?>
+    <?= usercard_html($rep['author']) ?>
     <div class="post-body">
       <div class="post-topmeta"><span><?= e(hace($rep['created_at'])) ?></span><span class="num">#<?= $n ?></span></div>
       <div class="post-content"><p><?= nl2br(e($rep['body'])) ?></p></div>
