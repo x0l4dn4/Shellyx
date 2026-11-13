@@ -124,6 +124,7 @@ function forum_head(string $title): void
     echo '<meta charset="utf-8">' . "\n";
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n";
     echo '<title>' . e($title) . '</title>' . "\n";
+    echo '<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">' . "\n";
@@ -136,7 +137,7 @@ function forum_bar(?array $user): void
     echo '<header class="fbar"><div class="wrap">';
     echo '<a class="brand" href="../../index.php">' . BRAND_CHIP . 'Shellyx</a>';
     echo '<nav class="mainnav"><a href="index.php" class="on">Foros</a><a href="novedades.php">Novedades</a><a href="miembros.php">Miembros</a></nav>';
-    echo '<div class="search">' . SEARCH_ICON . '<input type="text" placeholder="Buscar en el foro…" aria-label="Buscar"></div>';
+    echo '<form class="search" method="get" action="buscar.php">' . SEARCH_ICON . '<input type="search" name="q" placeholder="Buscar en el foro…" aria-label="Buscar"></form>';
     echo '<div class="session">';
     if ($user) {
         echo '<a class="btn btn-accent" href="new_post.php">Nueva publicación</a>';
