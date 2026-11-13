@@ -1,98 +1,151 @@
 <?php
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/layout.php';
-
 // El índice se ve sin sesión; publicar exige login (new_post.php).
 $user = current_user();
 
-// Hilos + autor.
-$threads = [];
-$res = mysqli_query(db(), "SELECT p.id, p.title, p.category, p.created_at, p.user_id, u.username AS author
-                           FROM posts p JOIN users u ON u.id = p.user_id");
-while ($res && $row = mysqli_fetch_assoc($res)) {
-    $row['reply_count'] = 0;
-    $row['last_time']   = $row['created_at'];
-    $row['last_user']   = $row['author'];
-    $threads[(int)$row['id']] = $row;
-}
+// Contadores por categoría (hilos generales: product_id NULL).
+$cat_threads = []; $cat_msgs = [];
+if ($r = mysqli_query(db(), "SELECT category, COUNT(*) c FROM posts WHERE product_id IS NULL GROUP BY category"))
+    while ($row = mysqli_fetch_assoc($r)) $cat_threads[$row['category']] = (int)$row['c'];
+if ($r = mysqli_query(db(), "SELECT p.category, COUNT(*) c FROM replies rr JOIN posts p ON p.id=rr.post_id WHERE p.product_id IS NULL GROUP BY p.category"))
+    while ($row = mysqli_fetch_assoc($r)) $cat_msgs[$row['category']] = (int)$row['c'];
 
-// Respuestas (ordenadas ASC): cuenta y "último mensaje" por hilo.
-$total_replies = 0;
-$res = mysqli_query(db(), "SELECT r.post_id, r.created_at, u.username
-                           FROM replies r JOIN users u ON u.id = r.user_id
-                           ORDER BY r.created_at ASC, r.id ASC");
-while ($res && $row = mysqli_fetch_assoc($res)) {
-    $total_replies++;
-    $pid = (int)$row['post_id'];
-    if (!isset($threads[$pid])) continue;
-    $threads[$pid]['reply_count']++;
-    $threads[$pid]['last_time'] = $row['created_at'];
-    $threads[$pid]['last_user'] = $row['username'];
-}
+// Productos y contadores por dispositivo.
+$products = [];
+if ($r = mysqli_query(db(), "SELECT id, name, price FROM products ORDER BY id"))
+    while ($row = mysqli_fetch_assoc($r)) $products[(int)$row['id']] = $row;
+$dev_threads = []; $dev_msgs = [];
+if ($r = mysqli_query(db(), "SELECT product_id, COUNT(*) c FROM posts WHERE product_id IS NOT NULL GROUP BY product_id"))
+    while ($row = mysqli_fetch_assoc($r)) $dev_threads[(int)$row['product_id']] = (int)$row['c'];
+if ($r = mysqli_query(db(), "SELECT p.product_id, COUNT(*) c FROM replies rr JOIN posts p ON p.id=rr.post_id WHERE p.product_id IS NOT NULL GROUP BY p.product_id"))
+    while ($row = mysqli_fetch_assoc($r)) $dev_msgs[(int)$row['product_id']] = (int)$row['c'];
 
-// Agrupar por categoría y ordenar por última actividad (desc).
-$by_cat = [];
-foreach ($threads as $t) {
-    $cat = isset(FORUM_CATEGORIES[$t['category']]) ? $t['category'] : 'general';
-    $by_cat[$cat][] = $t;
-}
-foreach ($by_cat as &$list) {
-    usort($list, fn($a, $b) => strcmp($b['last_time'], $a['last_time']));
-}
-unset($list);
+// Actividad reciente.
+$recent = [];
+if ($r = mysqli_query(db(), "SELECT p.id, p.title, p.created_at, u.username FROM posts p JOIN users u ON u.id=p.user_id ORDER BY p.created_at DESC LIMIT 6"))
+    while ($row = mysqli_fetch_assoc($r)) $recent[] = $row;
 
-// Estadísticas de comunidad.
-$total_hilos = count($threads);
-$total_msgs  = $total_hilos + $total_replies;
-$miembros = 0; $ultimo = '';
-if ($r = mysqli_query(db(), "SELECT COUNT(*) c FROM users"))            { $miembros = (int)(mysqli_fetch_assoc($r)['c'] ?? 0); }
-if ($r = mysqli_query(db(), "SELECT username FROM users ORDER BY id DESC LIMIT 1")) { $ultimo = mysqli_fetch_assoc($r)['username'] ?? ''; }
+$total_hilos = array_sum($cat_threads) + array_sum($dev_threads);
+$total_msgs  = $total_hilos + array_sum($cat_msgs) + array_sum($dev_msgs);
+
+$groups = [
+  'Gama de entrada'      => ['color' => 'var(--accent)', 'ids' => [1, 2]],
+  'Gama avanzada'        => ['color' => '#a98bff',       'ids' => [3]],
+  'Módulos y accesorios' => ['color' => 'var(--warn)',   'ids' => [4, 5, 6, 7]],
+  'Packs'                => ['color' => 'var(--ok)',      'ids' => [8, 9]],
+];
+$cat_dot = ['firmware' => 'var(--accent)', 'payloads' => '#a98bff', 'soporte' => 'var(--warn)', 'general' => 'var(--muted)'];
+
+// Miniatura del dispositivo (placeholder; la foto real vive en la tienda).
+function dev_thumb(int $id): string {
+    $icons = [
+        1 => '<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="8" r="2.4"/><path d="M9 14h6M9 17h6"/>',
+        2 => '<rect x="9" y="3" width="6" height="12" rx="1"/><path d="M12 15v6M9 8h6"/>',
+        3 => '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 4v2M15 4v2M9 18v2M15 18v2M4 9h2M4 15h2M18 9h2M18 15h2"/>',
+        4 => '<path d="M5 12a10 10 0 0 1 14 0M8 15a6 6 0 0 1 8 0"/><circle cx="12" cy="18" r="1"/>',
+        5 => '<path d="M12 11v9"/><circle cx="12" cy="8" r="2"/><path d="M7.8 12.2a6 6 0 0 1 0-8.4M16.2 3.8a6 6 0 0 1 0 8.4"/>',
+        6 => '<path d="M12 11v9"/><circle cx="12" cy="8" r="2"/><path d="M7.8 12.2a6 6 0 0 1 0-8.4M16.2 3.8a6 6 0 0 1 0 8.4"/>',
+        7 => '<rect x="6" y="3" width="12" height="18" rx="3"/><path d="M9 3v18"/>',
+        8 => '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+        9 => '<rect x="7" y="7" width="10" height="10" rx="1"/><path d="M10 7V4M14 7V4M10 20v-3M14 20v-3M7 10H4M7 14H4M20 10h-3M20 14h-3"/>',
+    ];
+    $p = $icons[$id] ?? $icons[3];
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
+}
 
 forum_head('Foros — Shellyx');
 forum_bar($user);
-forum_breadcrumb([['Inicio', null]]);
 ?>
-<section class="stats"><div class="wrap">
-  <div class="stat"><b><?= number_format($total_hilos, 0, ',', '.') ?></b><span>Hilos</span></div>
-  <div class="stat"><b><?= number_format($total_msgs, 0, ',', '.') ?></b><span>Mensajes</span></div>
-  <div class="stat"><b><?= number_format($miembros, 0, ',', '.') ?></b><span>Miembros</span></div>
-  <?php if ($ultimo !== ''): ?><div class="stat who"><b><?= e($ultimo) ?></b><span>Último registrado</span></div><?php endif; ?>
-</div></section>
+<main class="fh-wrap">
+  <div class="fh-grid">
 
-<main class="board"><div class="wrap">
-<?php foreach (FORUM_CATEGORIES as $key => [$name, $desc]):
-    $list = $by_cat[$key] ?? [];
-    $nh = count($list);
-    $nm = $nh;
-    foreach ($list as $t) { $nm += (int)$t['reply_count']; }
-?>
-  <section class="node">
-    <div class="node-head">
-      <div class="node-ico"><?= category_icon($key) ?></div>
-      <div><h2><?= e($name) ?></h2><p><?= e($desc) ?></p></div>
-      <div class="ns"><?= $nh ?> hilos · <?= $nm ?> mensajes</div>
+    <!-- Izquierda: Topics (categorías + dispositivos) -->
+    <aside class="fh-panel fh-side">
+      <div class="fh-ph">Topics</div>
+      <ul class="fh-top">
+        <?php foreach (FORUM_CATEGORIES as $key => [$name, $desc]): ?>
+          <li><a href="categoria.php?c=<?= e($key) ?>"><span class="fh-dot" style="background:<?= $cat_dot[$key] ?? 'var(--muted)' ?>"></span><?= e($name) ?></a></li>
+        <?php endforeach; ?>
+      </ul>
+      <div class="fh-subh">DISPOSITIVOS</div>
+      <ul class="fh-top">
+        <?php foreach ($products as $p): ?>
+          <li><a href="dispositivo.php?id=<?= (int)$p['id'] ?>"><span class="fh-dot" style="background:var(--surface-3)"></span><?= e($p['name']) ?></a></li>
+        <?php endforeach; ?>
+      </ul>
+    </aside>
+
+    <!-- Centro: categorías + subforos de dispositivo -->
+    <div>
+      <div class="fh-bhead">
+        <h1>Foros Shellyx</h1>
+        <a class="btn btn-ghost" href="novedades.php">Nuevos posts</a>
+      </div>
+
+      <section class="fh-sec">
+        <div class="fh-sech"><h2>Comunidad</h2></div>
+        <div class="fh-cards">
+          <?php foreach (FORUM_CATEGORIES as $key => [$name, $desc]):
+              $t = $cat_threads[$key] ?? 0; $m = $t + ($cat_msgs[$key] ?? 0); ?>
+          <article class="fh-card">
+            <div class="fh-ico"><?= category_icon($key) ?></div>
+            <div class="fh-b">
+              <h3><a href="categoria.php?c=<?= e($key) ?>"><?= e($name) ?></a></h3>
+              <p><?= e($desc) ?></p>
+              <div class="fh-counts"><span><b><?= $t ?></b> hilos</span><span><b><?= $m ?></b> mensajes</span></div>
+            </div>
+          </article>
+          <?php endforeach; ?>
+        </div>
+      </section>
+
+      <section class="fh-sec">
+        <?php foreach ($groups as $gname => $g): ?>
+          <div class="fh-sech"><h2>Dispositivos · <?= e($gname) ?></h2></div>
+          <div class="fh-cards" style="margin-bottom:14px">
+            <?php foreach ($g['ids'] as $pid): if (!isset($products[$pid])) continue; $p = $products[$pid];
+                $t = $dev_threads[$pid] ?? 0; $m = $t + ($dev_msgs[$pid] ?? 0); ?>
+            <article class="fh-card fh-dev" style="--g:<?= $g['color'] ?>">
+              <a class="fh-thumb" href="dispositivo.php?id=<?= (int)$pid ?>"><?= dev_thumb($pid) ?></a>
+              <div class="fh-b">
+                <h3><a href="dispositivo.php?id=<?= (int)$pid ?>"><?= e($p['name']) ?></a><span class="fh-price"><?= (int)$p['price'] ?> €</span></h3>
+                <div class="fh-counts"><span><b><?= $t ?></b> hilos</span><span><b><?= $m ?></b> mensajes</span></div>
+              </div>
+            </article>
+            <?php endforeach; ?>
+          </div>
+        <?php endforeach; ?>
+      </section>
     </div>
-    <?php if ($list): ?>
-    <ul class="threads">
-      <?php foreach ($list as $t): ?>
-      <li class="thread">
-        <?= avatar_html($t['author'], 't-ava') ?>
-        <div class="t-main">
-          <a class="t-title" href="post.php?id=<?= (int)$t['id'] ?>"><?= render_title_with_tag($t['title']) ?></a>
-          <div class="t-sub">iniciado por <a href="post.php?id=<?= (int)$t['id'] ?>"><?= e($t['author']) ?></a> · <?= e(hace($t['created_at'])) ?></div>
+
+    <!-- Derecha: Explora la tienda + Nuevos posts -->
+    <aside>
+      <div class="fh-explore">
+        <h2>Explora nuestra tienda</h2>
+        <p>Gadgets, módulos y firmware para montar tu propio arsenal de hardware hacking.</p>
+        <a class="btn btn-accent" href="/tienda/">Ir a la tienda</a>
+        <div class="fh-estats">
+          <div><b><?= count($products) ?></b><span>Productos</span></div>
+          <div><b><?= $total_hilos ?></b><span>Hilos</span></div>
+          <div><b><?= $total_msgs ?></b><span>Mensajes</span></div>
         </div>
-        <div class="t-count"><b><?= (int)$t['reply_count'] ?></b><span><?= $t['reply_count'] == 1 ? 'respuesta' : 'respuestas' ?></span></div>
-        <div class="t-last">
-          <?= avatar_html($t['last_user']) ?>
-          <div class="t-last-txt"><a href="post.php?id=<?= (int)$t['id'] ?>"><?= e($t['last_user']) ?></a><span><?= e(hace($t['last_time'])) ?></span></div>
-        </div>
-      </li>
-      <?php endforeach; ?>
-    </ul>
-    <?php else: ?>
-    <div class="node-empty">Aún no hay hilos en esta categoría.</div>
-    <?php endif; ?>
-  </section>
-<?php endforeach; ?>
-</div></main>
+      </div>
+
+      <div class="fh-panel">
+        <div class="fh-ph">Nuevos posts</div>
+        <?php foreach ($recent as $rp): ?>
+          <div class="fh-np-item">
+            <?= avatar_html($rp['username']) ?>
+            <div class="t">
+              <a href="post.php?id=<?= (int)$rp['id'] ?>"><?= e(strip_tag_prefix($rp['title'])) ?></a>
+              <span>último: <a href="perfil.php?u=<?= urlencode($rp['username']) ?>"><?= e($rp['username']) ?></a> · <?= e(hace($rp['created_at'])) ?></span>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </aside>
+
+  </div>
+</main>
 <?php forum_footer(); ?>

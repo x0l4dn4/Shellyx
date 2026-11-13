@@ -229,3 +229,53 @@ p{margin:0}
   .uc-stats{width:auto;margin:0 0 0 auto;border-top:none;padding-top:0}
   .node-head .ns{display:none}
 }
+
+/* ---- portada (home) estilo XDA: 3 columnas ---- */
+.fh-wrap{max-width:1340px;margin-inline:auto;padding:18px max(16px,env(safe-area-inset-left,0)) 52px}
+.fh-grid{display:grid;grid-template-columns:212px minmax(0,1fr) 320px;gap:20px;align-items:start}
+.fh-panel{background:var(--surface);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.fh-ph{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;font-size:11.5px;font-weight:700;letter-spacing:.08em;color:var(--faint);border-bottom:1px solid var(--border)}
+.fh-top{list-style:none;margin:0;padding:6px}
+.fh-top a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;color:var(--muted);font-weight:500;font-size:13.5px}
+.fh-top a:hover{background:var(--surface-2);color:var(--text)}
+.fh-dot{width:11px;height:11px;border-radius:3px;flex:none}
+.fh-subh{padding:12px 12px 4px;font-size:10.5px;font-weight:700;letter-spacing:.09em;color:var(--faint)}
+.fh-bhead{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--border);border-radius:9px;padding:15px 18px;margin-bottom:18px}
+.fh-bhead h1{font-size:19px;font-weight:700}
+.fh-sec{margin-bottom:22px}
+.fh-sech{display:flex;align-items:center;justify-content:space-between;padding:0 2px 10px}
+.fh-sech h2{font-size:13.5px;font-weight:600}
+.fh-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fh-card{display:flex;gap:13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px}
+.fh-card:hover{background:var(--surface-2)}
+.fh-ico{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:9px;background:var(--bg);border:1px solid var(--border-strong);color:var(--accent)}
+.fh-ico svg{width:22px;height:22px;stroke:var(--accent)}
+.fh-b{min-width:0}
+.fh-b h3{font-size:14.5px;font-weight:600}
+.fh-b h3 a{color:var(--text)}
+.fh-b h3 a:hover{color:var(--accent)}
+.fh-b p{font-size:12.5px;color:var(--muted);margin:3px 0 8px;line-height:1.42}
+.fh-counts{display:flex;gap:15px;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.fh-counts b{color:var(--muted);font-weight:600}
+.fh-dev{border-left:3px solid var(--g,var(--accent))}
+.fh-thumb{width:64px;height:64px;flex:none;border-radius:8px;background:linear-gradient(145deg,#161b20,#0f161b);border:1px solid var(--border-strong);display:grid;place-items:center;color:var(--g,var(--faint))}
+.fh-thumb svg{width:30px;height:30px}
+.fh-dev h3{font-size:14px}
+.fh-price{font-size:11.5px;color:var(--g,var(--accent));font-weight:600;margin-left:6px}
+.fh-explore{background:linear-gradient(165deg,var(--surface-2),var(--surface));border:1px solid var(--border);border-radius:11px;padding:22px 18px;text-align:center;margin-bottom:18px}
+.fh-explore h2{font-size:17px;font-weight:700;margin-bottom:6px}
+.fh-explore p{font-size:13px;color:var(--muted);margin-bottom:15px;line-height:1.45}
+.fh-explore .btn{width:100%;justify-content:center;padding-block:10px}
+.fh-estats{display:flex;justify-content:center;gap:24px;margin-top:17px;padding-top:15px;border-top:1px solid var(--border)}
+.fh-estats div{display:flex;flex-direction:column;gap:1px}
+.fh-estats b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.fh-estats span{font-size:11px;color:var(--muted)}
+.fh-np-item{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--border)}
+.fh-np-item:first-of-type{border-top:none}
+.fh-np-item .t{min-width:0}
+.fh-np-item .t a{display:block;font-size:12.5px;font-weight:600;color:var(--text);line-height:1.32}
+.fh-np-item .t a:hover{color:var(--accent)}
+.fh-np-item .t span{font-size:11px;color:var(--faint)}
+.fh-np-item .t span a{display:inline;font-size:11px;font-weight:500;color:var(--muted)}
+@media (max-width:1080px){.fh-grid{grid-template-columns:1fr}.fh-side{order:3}}
+@media (max-width:600px){.fh-cards{grid-template-columns:1fr}}
