@@ -170,8 +170,6 @@ function forum_footer(): void
 {
     echo '<footer class="foot"><div class="wrap">';
     echo '<a class="foot-brand" href="index.php">Shellyx</a><span class="spacer"></span>';
-    echo '<span>Laboratorio CTF — uso local y controlado</span>';
-    echo '<a href="index.php">Foros</a>';
     echo '</div></footer>';
     echo "\n</body>\n</html>";
 }
