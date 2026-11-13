@@ -289,7 +289,14 @@ function forum_breadcrumb(array $items): void
 function forum_footer(): void
 {
     echo '<footer class="foot"><div class="wrap">';
-    echo '<a class="foot-brand" href="index.php">Shellyx</a><span class="spacer"></span>';
+    echo '<a class="foot-brand" href="index.php">Shellyx</a>';
+    echo '<nav class="foot-legal">';
+    echo '<a href="/legal/aviso-legal.php">Aviso legal</a>';
+    echo '<a href="/legal/privacidad.php">Privacidad</a>';
+    echo '<a href="/legal/cookies.php">Cookies</a>';
+    echo '<a href="/legal/terminos.php">Términos</a>';
+    echo '<a href="/legal/faq.php">FAQ</a>';
+    echo '</nav>';
     echo '</div></footer>';
     echo "\n</body>\n</html>";
 }
