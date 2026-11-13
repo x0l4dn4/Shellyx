@@ -120,7 +120,7 @@ function sx_footer(): void
       <div>
         <h4>Comunidad</h4>
         <a href="/foro/">Foro</a>
-        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/x0l4dn4/Shellyx" target="_blank" rel="noopener">GitHub</a>
         <a href="/#comunidad">Retos mensuales</a>
       </div>
       <div>
