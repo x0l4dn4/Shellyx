@@ -172,3 +172,14 @@ INSERT INTO replies (post_id, user_id, body, created_at) VALUES
 (14, @js,   'Probado tu flowgraph en 868 y captura de lujo. Subiendo la ganancia RF más de 30 dB empieza a saturar, cuidado.', NOW() - INTERVAL 40 HOUR),
 (15, @js,   'Justo lo que necesitaba para empezar con el Mini. El DELAY inicial es clave, a mí no lo detectaba sin él.', NOW() - INTERVAL 30 HOUR),
 (17, @ag,   'Modo monitor estable con el One lo tengo fijando el canal y desactivando el power save. Si no, se cae solo.', NOW() - INTERVAL 12 HOUR);
+
+-- Cuentas de la tienda (clientes). Registro abierto desde la tienda; separadas de
+-- los usuarios del foro. Una cuenta de ejemplo para la demo.
+CREATE TABLE customers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(64) UNIQUE,
+  password_md5 CHAR(32)
+) DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO customers (username, password_md5) VALUES
+  ('demo', MD5('demo1234'));

@@ -1,0 +1,12 @@
+Fotos de producto — Wikimedia Commons (licencia libre)
+
+shellyx-one  <-  https://commons.wikimedia.org/wiki/File:Flipper_Zero.jpg  [CC BY-SA 4.0]
+shellyx-mini  <-  https://commons.wikimedia.org/wiki/File:2023_Pendrive%27y_Verbatim_Store_%E2%80%98n%E2%80%99_Click_16_GB_(1).jpg  [CC BY-SA 4.0]
+shellyx-pro  <-  https://commons.wikimedia.org/wiki/File:Single-board_computer_Rascal_1.3.jpg  [CC BY-SA 2.0]
+modulo-wifi-recon  <-  https://commons.wikimedia.org/wiki/File:ESP32_Dev_Board.jpg  [CC BY-SA 4.0]
+modulo-subghz  <-  https://commons.wikimedia.org/wiki/File:AUREL_TX-SAW_BOOST;_433.92_MHz,_400-600_mW_SAW_RF_Transmitter_Module.jpg  [CC BY-SA 4.0]
+antena-alta-ganancia  <-  https://commons.wikimedia.org/wiki/File:RP-SMA_connectors_in_WiFi_antennas.jpg  [CC BY-SA 3.0]
+carcasa-translucida  <-  https://commons.wikimedia.org/wiki/File:Mega_Enclosure_-_Blue_-_9568333793.jpg  [CC BY 2.0]
+kit-educativo  <-  https://commons.wikimedia.org/wiki/File:Computer_Entertainer_3-7.pdf  [CC BY 4.0]
+pack-firmwares  <-  https://commons.wikimedia.org/wiki/File:ST90E40ZL1_MCU_2.jpg  [CC BY-SA 4.0]
+kit-educativo  <-  https://commons.wikimedia.org/wiki/File:Assemblaggio_laboratorio_kit_starter.jpg  [CC BY-SA 4.0]
