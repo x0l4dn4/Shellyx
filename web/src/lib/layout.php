@@ -49,6 +49,7 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
         'inicio' => ['/',        'Inicio'],
         'tienda' => ['/tienda/', 'Tienda'],
         'foro'   => ['/foro/',   'Foro'],
+        'docs'   => ['/docs/',   'Docs'],
     ];
     // Contador del carrito (si hay sesión activa con carrito). Seguro si no la hay.
     $cartCount = 0;
@@ -77,7 +78,6 @@ function sx_header(string $title, string $active = '', ?array $user = null, stri
       <?php foreach ($nav as $k => $it): ?>
         <a href="<?= $it[0] ?>"<?= $active === $k ? ' class="is-active"' : '' ?>><?= e($it[1]) ?></a>
       <?php endforeach; ?>
-      <a href="https://github.com/x0l4dn4/Shellyx" target="_blank" rel="noopener"><?= sx_icon('github', 16) ?></a>
       <a class="nav__cart" href="/tienda/carrito.php" aria-label="Carrito" title="Carrito">
         <?= sx_icon('cart', 18) ?><?php if ($cartCount > 0): ?><span class="badge"><?= $cartCount ?></span><?php endif; ?>
       </a>
@@ -118,7 +118,7 @@ function sx_footer(): void
       <div>
         <h4>Comunidad</h4>
         <a href="/foro/">Foro</a>
-        <a href="https://github.com/x0l4dn4/Shellyx" target="_blank" rel="noopener">GitHub</a>
+        <a href="/docs/">Docs</a>
         <a href="/#retos">Retos mensuales</a>
       </div>
       <div>
