@@ -8,8 +8,11 @@ $user = current_user();
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Carga del hilo.
-$stmt = mysqli_prepare(db(), "SELECT p.id, p.title, p.body, p.embed_url, p.category, p.created_at, p.user_id, u.username AS author
-                              FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
+$stmt = mysqli_prepare(db(), "SELECT p.id, p.title, p.body, p.embed_url, p.category, p.created_at, p.user_id, p.product_id,
+                                     u.username AS author, pr.name AS device_name
+                              FROM posts p JOIN users u ON u.id = p.user_id
+                              LEFT JOIN products pr ON pr.id = p.product_id
+                              WHERE p.id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $res  = mysqli_stmt_get_result($stmt);
@@ -54,12 +57,22 @@ forum_bar($user);
 ?>
 <?php if ($post): ?>
 <?php
-    $catName = FORUM_CATEGORIES[$post['category']][0] ?? FORUM_CATEGORIES['general'][0];
-    forum_breadcrumb([
-        ['Inicio', 'index.php'],
-        [$catName, 'index.php'],
-        [strip_tag_prefix($post['title']), null],
-    ]);
+    if (!empty($post['product_id']) && !empty($post['device_name'])) {
+        $crumb = [
+            ['Inicio', 'index.php'],
+            ['Dispositivos', 'index.php#dispositivos'],
+            [$post['device_name'], device_url((int)$post['product_id'])],
+            [strip_tag_prefix($post['title']), null],
+        ];
+    } else {
+        $catName = FORUM_CATEGORIES[$post['category']][0] ?? FORUM_CATEGORIES['general'][0];
+        $crumb = [
+            ['Inicio', 'index.php'],
+            [$catName, 'index.php#cat-' . ($post['category'] ?: 'general')],
+            [strip_tag_prefix($post['title']), null],
+        ];
+    }
+    forum_breadcrumb($crumb);
 ?>
 <div class="thread-head"><div class="wrap">
   <h1><?= render_title_with_tag($post['title']) ?></h1>

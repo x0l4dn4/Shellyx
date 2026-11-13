@@ -1,8 +1,6 @@
 <?php
-// Presentación compartida del foro (estilo XenForo/XDA). Solo marcado y helpers
-// de vista; la autenticación vive en lib/auth.php. Toda salida de datos de BD
-// pasa por e() — el foro NO es vulnerable a XSS; la única vuln del foro es la RFI
-// de post.php vía include($embed_url).
+// Presentación compartida del foro (estilo XenForo/XDA): marcado y helpers de
+// vista. La autenticación vive en lib/auth.php.
 
 // Categorías (nodos). La clave es el valor de posts.category.
 const FORUM_CATEGORIES = [
@@ -15,6 +13,37 @@ const FORUM_CATEGORIES = [
 function e(?string $s): string
 {
     return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8');
+}
+
+// Agrupación de los dispositivos de la tienda en el índice del foro (subforos).
+// La clave es el título del grupo; el valor, los product_id que contiene.
+const DEVICE_GROUPS = [
+    'Dispositivos Shellyx' => [1, 2, 3, 8],
+    'Módulos y accesorios' => [4, 5, 6, 7, 9],
+];
+
+// Glifo SVG para la "miniatura" de cada dispositivo (varía por product_id).
+function device_icon_svg(int $id): string
+{
+    $paths = [
+        1 => '<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 7V4M14 7V4M10 20v-3M14 20v-3M7 10H4M7 14H4M20 10h-3M20 14h-3"/>',
+        2 => '<circle cx="12" cy="19" r="2"/><path d="M12 17V5"/><path d="M9 12H6v3M15 10h3v5"/>',
+        3 => '<rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/><rect x="10.5" y="10.5" width="3" height="3"/>',
+        4 => '<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/>',
+        5 => '<path d="M12 12v9"/><circle cx="12" cy="9" r="2"/><path d="M7.8 13.2a6 6 0 0 1 0-8.4M16.2 4.8a6 6 0 0 1 0 8.4"/>',
+        6 => '<path d="M12 21V9M8 9l4-6 4 6"/><path d="M6 21h12"/>',
+        7 => '<rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9.5 6.5h5"/>',
+        8 => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M3 9h4M3 15h4M11 8h7M11 12h7"/>',
+        9 => '<path d="M4 7h16M4 12h16M4 17h10"/>',
+    ];
+    $p = $paths[$id] ?? $paths[1];
+    return '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
+}
+
+// URL del subforo de un dispositivo.
+function device_url(int $id): string
+{
+    return 'dispositivo.php?id=' . $id;
 }
 
 function avatar_initials(string $username): string
@@ -72,7 +101,7 @@ function strip_tag_prefix(string $title): string
     return trim(preg_replace('/^\s*\[[^\]]{1,16}\]\s*/u', '', $title));
 }
 
-// Renderiza el título con un chip de color si empieza por [TAG]. Escapa el resto.
+// Renderiza el título con un chip de color si empieza por [TAG].
 function render_title_with_tag(string $title): string
 {
     if (preg_match('/^\s*\[([^\]]{1,16})\]\s*(.*)$/u', $title, $m)) {
@@ -101,14 +130,14 @@ function category_icon(string $key): string
     return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
 }
 
-// Extracto de texto plano en una línea (sin escapar: pásalo por e()).
+// Extracto de texto plano en una línea.
 function excerpt(string $text, int $len = 180): string
 {
     $t = trim(preg_replace('/\s+/u', ' ', $text));
     return mb_strlen($t, 'UTF-8') > $len ? rtrim(mb_substr($t, 0, $len, 'UTF-8')) . '…' : $t;
 }
 
-// URL del perfil público de un usuario (ya escapada para atributo href).
+// URL del perfil público de un usuario.
 function profile_url(string $username): string
 {
     return 'perfil.php?u=' . e(rawurlencode($username));

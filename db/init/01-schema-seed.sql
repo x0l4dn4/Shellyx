@@ -26,6 +26,7 @@ CREATE TABLE posts (
   body TEXT,
   embed_url VARCHAR(512),
   category VARCHAR(32) NOT NULL DEFAULT 'general',
+  product_id INT NULL,          -- subforo de dispositivo (NULL = foro general)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4;
 
@@ -114,6 +115,34 @@ INSERT INTO posts (id, user_id, title, body, embed_url, category, created_at) VA
  'Bienvenidos a Shellyx. Normas rápidas:\n\n1. Nada de datos ni credenciales reales de terceros en los payloads.\n2. Todo lo que se comparte aquí es para laboratorio y uso controlado.\n3. Antes de abrir un hilo de brick, mirad la guía fijada y pegad el log completo.\n\nGracias por mantener la comunidad sana.',
  '', 'general', NOW() - INTERVAL 15 DAY);
 
+-- Hilos de SUBFORO DE DISPOSITIVO (product_id apunta a products). Estos NO salen
+-- en los nodos de categoría del índice; viven en el subforo de su dispositivo.
+INSERT INTO posts (id, user_id, title, body, embed_url, category, product_id, created_at) VALUES
+(12, @ml,
+ 'Shellyx One: ¿mejor antena para el sub-GHz de serie?',
+ 'Tengo el Shellyx One desde hace un mes y el alcance a 433 MHz se me queda corto con la antena de serie. ¿Qué antena SMA estáis usando sin que pese demasiado en la mochila?',
+ '', 'general', 1, NOW() - INTERVAL 2 DAY),
+(13, @js,
+ 'Pinout del GPIO del Shellyx One (rev.B)',
+ 'Dejo el pinout del header GPIO del Shellyx One rev.B por si os sirve: 3V3, GND, 2x UART, I2C y 4 pines libres mapeables desde el firmware. ¿Alguien ha sacado SPI por software?',
+ '', 'general', 1, NOW() - INTERVAL 20 HOUR),
+(14, @ag,
+ 'Shellyx Pro: aprovechar el SDR integrado con GNU Radio',
+ 'El SDR del Shellyx Pro tira de maravilla con GNU Radio por USB. Comparto un flowgraph básico para capturar ASK/OOK y un par de trucos de ganancia. ¿Lo habéis probado con señales de 868?',
+ '', 'general', 3, NOW() - INTERVAL 3 DAY),
+(15, @admin,
+ 'Shellyx Mini: cargar tu primer payload paso a paso',
+ 'Mini-guía para los que acaban de pillar el Shellyx Mini: cómo montar el entorno, escribir un DuckyScript sencillo y cargarlo por USB sin morir en el intento. Dudas por aquí.',
+ '', 'general', 2, NOW() - INTERVAL 5 DAY),
+(16, @mod,
+ 'Modulo Sub-GHz: legalidad de 868 MHz por país',
+ 'Recordatorio: antes de transmitir en 868 MHz con el módulo Sub-GHz, revisad la normativa de vuestro país. Este hilo es para recopilar límites de potencia y bandas permitidas. Solo uso legal.',
+ '', 'general', 5, NOW() - INTERVAL 6 DAY),
+(17, @ml,
+ 'Modulo WiFi Recon: capturas limpias en 2.4 GHz',
+ 'Trucos para sacar capturas limpias con el módulo WiFi Recon: fijar canal, bajar el ruido y filtrar por BSSID. ¿Alguien ha conseguido modo monitor estable con el One?',
+ '', 'general', 4, NOW() - INTERVAL 30 HOUR);
+
 -- Respuestas sembradas (1-5 por usuario), para que los hilos se vean con conversación.
 INSERT INTO replies (post_id, user_id, body, created_at) VALUES
 (1, @ml,    'Flasheada sin problemas en mi unidad rev.B. El replay a 915 MHz va fino. Gracias por el currazo.', NOW() - INTERVAL 58 HOUR),
@@ -135,4 +164,11 @@ INSERT INTO replies (post_id, user_id, body, created_at) VALUES
 (8, @ag,    'Guía de cabecera. Añadiría: nunca flashear con la batería pelada, que es el error número uno.', NOW() - INTERVAL 240 HOUR),
 (9, @js,    '¿Merece la pena el salto solo por el sub-GHz? Lo tengo en el carrito.', NOW() - INTERVAL 72 HOUR),
 (9, @admin, 'Buen unboxing. El front-end nuevo se nota en el alcance a 433. Para mí vale el cambio.', NOW() - INTERVAL 26 HOUR),
-(10, @ml,   '¡Bienvenido! El Pwnapet engancha, en nada tienes la mochila llena de handshakes. ¿Ya le pusiste pantalla e-ink?', NOW() - INTERVAL 72 HOUR);
+(10, @ml,   '¡Bienvenido! El Pwnapet engancha, en nada tienes la mochila llena de handshakes. ¿Ya le pusiste pantalla e-ink?', NOW() - INTERVAL 72 HOUR),
+-- Respuestas de los subforos de dispositivo.
+(12, @ag,   'Yo le puse una SMA de 3 dBi plegable y ganó bastante sin estorbar. La de 5 dBi ya pesa de más para llevarla colgada.', NOW() - INTERVAL 40 HOUR),
+(12, @admin,'Ojo con las antenas chinas sin especificar banda: muchas están afinadas para 2.4 GHz y en sub-GHz no rinden.', NOW() - INTERVAL 20 HOUR),
+(13, @mod,  'Gracias por el pinout. SPI por software funciona a baja velocidad con bit-banging, pero para SD mejor el HW.', NOW() - INTERVAL 10 HOUR),
+(14, @js,   'Probado tu flowgraph en 868 y captura de lujo. Subiendo la ganancia RF más de 30 dB empieza a saturar, cuidado.', NOW() - INTERVAL 40 HOUR),
+(15, @js,   'Justo lo que necesitaba para empezar con el Mini. El DELAY inicial es clave, a mí no lo detectaba sin él.', NOW() - INTERVAL 30 HOUR),
+(17, @ag,   'Modo monitor estable con el One lo tengo fijando el canal y desactivando el power save. Si no, se cae solo.', NOW() - INTERVAL 12 HOUR);

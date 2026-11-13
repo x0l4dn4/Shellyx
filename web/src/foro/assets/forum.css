@@ -323,3 +323,98 @@ a.me:hover{background:var(--surface-2);color:var(--text)}
   .pf-stats{width:100%;justify-content:flex-start;text-align:left}
   .pf-action{width:100%;justify-content:center}
 }
+
+/* ===== índice estilo XDA: 3 columnas ===== */
+.forum-shell{padding-block:18px 46px}
+.wrap-wide{max-width:1320px}
+.xgrid{display:grid;grid-template-columns:230px minmax(0,1fr) 300px;gap:20px;align-items:start}
+.col-left,.col-right{display:flex;flex-direction:column;gap:18px;position:sticky;top:66px}
+
+.side-card{background:var(--surface);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.side-card__head{padding:12px 15px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+
+/* topics (izquierda) */
+.topic-list{display:flex;flex-direction:column;padding:6px}
+.topic-list a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;color:var(--text);font-size:14px;font-weight:500}
+.topic-list a:hover{background:var(--surface-2);color:var(--accent);text-decoration:none}
+.topic-ic{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;flex:none;color:var(--accent);background:var(--accent-wash)}
+.topic-ic svg{width:15px;height:15px;stroke:var(--accent)}
+
+/* centro */
+.board-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.board-head h1{font-size:21px;font-weight:700}
+.board-head__link{font-size:13.5px;font-weight:600}
+
+/* dispositivos */
+.devices{margin-top:28px}
+.devices__intro h2{font-size:18px;font-weight:700}
+.devices__intro p{font-size:13px;color:var(--muted);margin-top:4px}
+.dev-group{margin-top:18px}
+.dev-group__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dev-group__head h3{font-size:15px;font-weight:600}
+.dev-group__link{font-size:12.5px;color:var(--muted)}
+.dev-group__link:hover{color:var(--accent)}
+.dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dev-card{display:flex;align-items:center;gap:13px;padding:12px 14px;background:var(--surface);
+  border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:9px;color:var(--text);
+  transition:background .15s ease,transform .12s ease,border-color .15s ease}
+.dev-card:hover{background:var(--surface-2);border-left-color:var(--accent-strong);text-decoration:none;transform:translateY(-1px)}
+.dev-media{display:grid;place-items:center;width:46px;height:46px;flex:none;border-radius:8px;
+  color:var(--accent);background:var(--bg);border:1px solid var(--border-strong)}
+.dev-media svg{width:24px;height:24px;stroke:var(--accent)}
+.dev-name{font-weight:600;font-size:14.5px}
+.dev-card:hover .dev-name{color:var(--accent)}
+.dev-stats{font-size:12px;color:var(--faint);margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* derecha: promo tienda */
+.promo{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--border-strong);
+  border-radius:11px;padding:20px;text-align:center}
+.promo h3{font-size:17px;font-weight:700}
+.promo p{font-size:13px;color:var(--muted);margin:8px 0 16px}
+.promo-stats{display:flex;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.promo-stats div{flex:1;display:flex;flex-direction:column}
+.promo-stats b{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.promo-stats span{font-size:11.5px;color:var(--muted)}
+
+/* derecha: nuevos posts */
+.newposts{list-style:none;margin:0;padding:0}
+.newposts li{display:flex;gap:10px;padding:11px 14px;border-top:1px solid var(--border)}
+.newposts li:first-child{border-top:none}
+.newposts li:hover{background:var(--surface-2)}
+.np-main{min-width:0}
+.np-title{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.35;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.np-title:hover{color:var(--accent)}
+.np-sub{font-size:11.5px;color:var(--faint);margin-top:3px}
+.np-sub a{color:var(--muted)}
+
+/* cabecera del subforo de dispositivo */
+.dev-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 20px;margin-bottom:18px;
+  background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--border);border-radius:11px}
+.dev-head__media{display:grid;place-items:center;width:58px;height:58px;flex:none;border-radius:10px;
+  color:var(--accent);background:var(--bg);border:1px solid var(--border-strong)}
+.dev-head__media svg{width:30px;height:30px;stroke:var(--accent)}
+.dev-head__main{min-width:0;flex:1}
+.dev-head__main h1{font-size:20px;font-weight:700;margin:.15em 0}
+.dev-head__desc{font-size:13px;color:var(--muted)}
+.dev-head__actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* nota de subforo en el compositor */
+.compose-dev{margin-bottom:14px;padding:10px 13px;border-radius:7px;font-size:13.5px;color:var(--muted);
+  background:var(--accent-wash);border:1px solid var(--border-strong)}
+.compose-dev strong{color:var(--accent)}
+
+/* responsive del índice XDA */
+@media (max-width:1040px){
+  .xgrid{grid-template-columns:200px minmax(0,1fr)}
+  .col-right{grid-column:1 / -1;position:static;flex-direction:row;flex-wrap:wrap}
+  .col-right > *{flex:1;min-width:260px}
+}
+@media (max-width:720px){
+  .xgrid{grid-template-columns:1fr}
+  .col-left{display:none}
+  .col-left,.col-right{position:static}
+  .dev-grid{grid-template-columns:1fr}
+}
